@@ -1,2 +1,2 @@
 # TCL_videoChat
-laravel+passport+tx_cloud+qiniu_cloud+mongodb+redis实时音视频
+laravel5.6+passport+oauth2.0+tx_cloud+qiniu_cloud+mongodb+redis实时音视频
