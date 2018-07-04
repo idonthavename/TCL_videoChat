@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::middleware('client')->prefix('v1')->group(function (){
-    Route::post('/videoRoom/{roomid?}','Api\VideoChatRoomController@roomAddress');
+    Route::post('/videoRoom/{role?}/{roomid?}','Api\VideoChatRoomController@roomAddress');
 });
 
-Route::get('/videoRoom/{roomid?}','Api\VideoChatRoomController@roomAddress');
+Route::get('/videoRoom/{role?}/{roomid?}','Api\VideoChatRoomController@roomAddress');

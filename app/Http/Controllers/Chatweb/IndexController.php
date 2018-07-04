@@ -5,22 +5,54 @@ namespace App\Http\Controllers\Chatweb;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\WebRTCSigApi;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Redis;
 
 class IndexController extends Controller
 {
     private $tx_config;
+    private $redis;
+
+    public function __construct(){
+        $this->redis = app('redis.connection');
+    }
 
     public function play(){
         return view('chatweb.index');
     }
 
     public function conf(Request $request){
+        //配置项
         $this->tx_config = [
             'sdkappid'=>env('TX_SDKAPPID'),
             'accountType'=>env('TX_ACCOUNTTYPE'),
             'roomid'=>$request->roomid,
-            'userid'=>$request->session()->getId()
+            'userid'=>md5($request->session()->getId().env('VIDEOCHAT_USER_SALT')),
+            'original'=>$request->session()->getId()
         ];
+
+        //redis判断角色权限，并限制入场人数
+        $rolerData = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
+        switch ($request->role){
+            case 'supporter':
+                $supporters = explode(',',$rolerData);
+                $supporterNum = count($supporters);
+                if (!in_array($this->tx_config['userid'],$supporters) && $supporterNum < 2){
+                    $supporters[] = $this->tx_config['userid'];
+                    $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,implode(',',$supporters));
+                }elseif (!in_array($this->tx_config['userid'],$supporters) && $supporterNum >= 2){
+                    return response()->json(['status'=>-200,'msg'=>'亲，您不在援交者名单上哦。']);
+                }
+                break;
+            default:
+                if (!isset($rolerData) || empty($rolerData)){
+                    $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,$this->tx_config['userid']);
+                }elseif ($rolerData && $rolerData != $this->tx_config['userid']){
+                    return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);
+                }
+        }
+
+        //生成txsdk  start
         $txsdk = new WebRTCSigApi();
         $txsdk->setSdkAppid($this->tx_config['sdkappid']);
         //读取公钥的内容
@@ -40,9 +72,63 @@ class IndexController extends Controller
                 'sdkappid'=>$this->tx_config['sdkappid'],
                 'accountType'=>$this->tx_config['accountType'],
                 'roomid'=>$this->tx_config['roomid'],
+                'original'=>$this->tx_config['original'],
                 'userSig'=>$userSig,
-                'privMapEncrypt'=>$privMapEncrypt,
+                'privMapEncrypt'=>$privMapEncrypt
             ]
         ]);
+    }
+
+    //退出房间，只记录五秒
+    public function quitRoom(Request $request){
+        $userid = $request->input('original') ? md5($request->input('original').env('VIDEOCHAT_USER_SALT')) : md5($request->session()->getId().env('VIDEOCHAT_USER_SALT'));
+        $rolerData = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
+        switch ($request->role){
+            case 'supporter':
+                $supporters = explode(',',$rolerData);
+                if (in_array($userid,$supporters)){
+                    $key = array_search($userid,$supporters);
+                    unset($supporters[$key]);
+                    $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,implode(',',$supporters));
+                    $this->redis->setex('TCL_WEBRTCROOM_'.$request->roomid.'_'.$userid,60,$request->role);
+                    return response()->json(['status'=>200,'msg'=>'退出房间成功']);
+                }
+                break;
+            default:
+                if ($rolerData == $userid){
+                    $this->redis->hdel('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
+                    $this->redis->setex('TCL_WEBRTCROOM_'.$request->roomid.'_'.$userid,60,$request->role);
+                    return response()->json(['status'=>200,'msg'=>'退出房间成功']);
+                }
+        }
+        return response()->json(['status'=>-200,'msg'=>'退出房间异常']);
+    }
+
+    //检测退出房间的人是谁，向其他用户发送消息（ajax向）
+    public function checkQuitUserForRole(Request $request){
+        $userid = strip_tags($request->input('userid',''));
+        $ret = ['status'=>-200,'msg'=>'用户不存在'];
+        if (!$userid) return response()->json($ret);
+        $role = $this->redis->get('TCL_WEBRTCROOM_'.$request->roomid.'_'.$userid);
+        if (isset($role) && !empty($role)){
+            $roleAllow = ['anchor'=>'坐席','supporter'=>'支援工程师','company'=>'客户'];
+            $ret['status'] = 200;
+            $ret['msg'] = $roleAllow[$role].'已离开房间';
+            $ret['data'] = ['role'=>$role];
+            return response()->json($ret);
+        }else{
+            return response()->json($ret);
+        }
+    }
+
+    //是否客户
+    public function isCompany(Request $request){
+        $userid = strip_tags($request->input('userid',''));
+        $ret = ['status'=>-200,'msg'=>'用户不存在'];
+        if (!$userid) return response()->json($ret);
+        $companyid = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,'company');
+        $ret = ['status'=>200,'msg'=>'Success'];
+        $ret['data'] = $companyid === $userid ? ['result'=>true] : ['result'=>false];
+        return response()->json($ret);
     }
 }

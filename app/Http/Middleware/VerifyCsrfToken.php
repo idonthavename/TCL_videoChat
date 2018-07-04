@@ -13,6 +13,9 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
-        'chatweb/conf'
+        'chatweb/conf',
+        'chatweb/quitRoom',
+        'chatweb/checkQuitUserForRole',
+        'chatweb/isCompany',
     ];
 }

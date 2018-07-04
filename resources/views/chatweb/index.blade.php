@@ -9,6 +9,10 @@
     <script type="text/javascript">
         var csrf = "{{csrf_token()}}";
         var FetchSigCgi = "{{url('/chatweb/conf')}}";
+        var checkUseridCgi = "{{url('/chatweb/checkQuitUserForRole')}}";
+        var quitRoomCgi = "{{url('/chatweb/quitRoom')}}";
+        var isCompanyCgi = "{{url('/chatweb/isCompany')}}";
+        var localGlobal = "";
         if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
             var version = parseFloat(RegExp.$1);
             if (version > 2.3) {
@@ -45,6 +49,15 @@
     {{--<button data-remodal-action="confirm" class="remodal-confirm">Hello!</button>--}}
 </div>
 
+<div data-remodal-id="modal3" role="dialog" aria-labelledby="modal3Title" aria-describedby="modal3Desc">
+    <div>
+        <h2 id="modal3Title">提示</h2>
+        <p id="modal3Desc" style="margin-top: 2rem;"></p>
+    </div>
+    <br>
+    <button data-remodal-action="confirm" class="remodal-confirm">确定</button>
+</div>
+
 <div class="holder">
     <img src="images/chatweb/share.jpg" style="position: absolute; top: 0;left: 0;opacity: 0;">
 
@@ -65,6 +78,7 @@
 
     <!--page2-->
     <div class="vid abs">
+        <p id="wattingForCompany" style="color: white;width: 100%;text-align: center;margin-top: 50%;">请稍后，等待客户接入中..........</p>
         <img class="vidImg abs" src="images/chatweb/p01.jpg" width="640" />
         <div id="remote-video-wrap"></div>
         <!--        <video id="mid" src="" width="640" height="1136" preload="preload" poster="music/p01.jpg" x-webkit-airplay="true"-->
@@ -91,12 +105,16 @@
 {{--<script type="text/javascript" src="js/chatweb/cache-1.0.min.js"></script>--}}
 <script type="text/javascript" src="js/chatweb/video2.js?t={{time()}}"></script>
 <script type="text/javascript" src="js/remodal/remodal.js"></script>
-<script src="https://sqimg.qq.com/expert_qq/webrtc/latest/WebRTCAPI.min.js"></script>
-
+{{--<script src="https://sqimg.qq.com/expert_qq/webrtc/latest/WebRTCAPI.min.js"></script>--}}
+<script src="https://sqimg.qq.com/expert_qq/webrtc/2.2/WebRTCAPI.min.js"></script>
+<script type="text/javascript" src="js/chatweb/im.js"></script>
+<script type="text/javascript" src="js/chatweb/webim.js"></script>
+@if(config('app.debug'))
 <script src="https://sxb.qcloud.com/webrtc-samples/assets/libs/vconsole.min.js"></script>
 <script>
     var vConsole = new VConsole();
 </script>
+@endif
 
 <script type="text/javascript" src="js/chatweb/tx.js?t={{time()}}"></script>
 </body>

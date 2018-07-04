@@ -15,6 +15,8 @@
 // 去控制台把私钥下载下来，用TLS工具算一个签名（usersig)
 
 //不要把您的sdkappid填进来就用这个cgi去测，测试demo的cgi没有您的私钥，臣妾做不到啊
+
+//以下判断浏览器是否支持webrtc
 /*navigator.getUserMedia ||
 (navigator.getUserMedia = navigator.mozGetUserMedia ||  navigator.webkitGetUserMedia || navigator.msGetUserMedia);
 
@@ -26,6 +28,11 @@ if (!navigator.getUserMedia) {
     }).open();
 }*/
 
+window.onbeforeunload = function(){
+    checkLeave();
+    return true;
+}
+
 function onKickout() {
     alert("on kick out!");
 }
@@ -34,11 +41,23 @@ function onRelayTimeout(msg) {
     alert("onRelayTimeout!" + (msg ? JSON.stringify(msg) : ""));
 }
 
-function createVideoElement( id, isLocal ){
+function createVideoElement( id, isLocal, userid){
+    var openVideo = false;
+    isCompany(userid,function (json) {
+        if (json.status == 200){
+            openVideo = json.data.result;
+            console.log('company is:'+openVideo);
+            if (openVideo) $("#"+id).show();
+        }else {
+            console.error(json.msg);
+        }
+    },function (error) {
+        console.error(error);
+        alert('视频初始化失败');
+    });
     var videoDiv=document.createElement("div");
-    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted':'') +' playsinline poster="images/chatweb/p01.jpg" width="640" height="1136"></video>';
+    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p01.jpg" width="640" height="1136" style="display: none;"></video>';
     document.querySelector("#remote-video-wrap").appendChild(videoDiv);
-
     return document.getElementById(id);
 }
 
@@ -48,7 +67,7 @@ function onLocalStreamAdd(info) {
         var id = "local";
         var video = document.getElementById(id);
         if(!video){
-            createVideoElement(id, true);
+            createVideoElement(id, true, localGlobal);
         }
         var video = document.getElementById(id)
         video.srcObject = info.stream;
@@ -79,9 +98,10 @@ function onRemoteStreamUpdate( info ) {
         var id = info.videoId;
         var video = document.getElementById(id);
         if(!video){
-            video = createVideoElement(id);
+            video = createVideoElement(id, false, info.userId);
         }
         video.srcObject = info.stream;
+        $("#wattingForCompany").hide();
     } else{
         console.log('欢迎用户'+ info.userId+ '加入房间');
     }
@@ -95,6 +115,25 @@ function onRemoteStreamRemove( info ) {
         videoNode.srcObject = null;
         document.getElementById(info.videoId).parentElement.removeChild(videoNode);
     }
+    setTimeout(function () {
+        checkQuitUserForRole(info.userId,
+            function (json) {
+                if(json && json.status === 200 ){
+                    $('#modal3Desc').text(json.msg);
+                    $('[data-remodal-id=modal3]').remodal({
+                        modifier: 'with-red-theme',
+                        closeOnEscape: false,
+                        closeOnOutsideClick: true
+                    }).open();
+                    if (json.data.role == "company") $("#wattingForCompany").show();
+                }else{
+                    console.error(json.msg);
+                }
+            },function (err){
+                console.error(err);
+            }
+        );
+    },1000);
 }
 
 function onWebSocketClose() {
@@ -104,7 +143,7 @@ function onWebSocketClose() {
 function initRTC(opts){
     // 初始化
     window.RTC = new WebRTCAPI({
-        "useCloud":1,
+        //"useCloud":1,
         "userId": opts.userId,
         "userSig": opts.userSig,
         "sdkAppId": opts.sdkappid,
@@ -112,11 +151,11 @@ function initRTC(opts){
         "closeLocalMedia": opts.closeLocalMedia
     },function(){
         RTC.createRoom({
-            roomid : opts.roomid * 1,
+            roomid : opts.roomid,
             privateMapKey: opts.privateMapKey,
             role : "user",
-            pstnBizType: parseInt($("#pstnBizType").val() || 0),
-            pstnPhoneNumber:  $("#pstnPhoneNumber").val()
+            /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
+            pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
         });
     },function( error ){
         console.error("init error", error)
@@ -144,6 +183,27 @@ function initRTC(opts){
          errorMsg: "xxxxx"
          } */
     });
+
+    var loginInfo = {
+        sdkAppID: opts.sdkappid,
+        appIDAt3rd: opts.sdkappid,
+        identifier: opts.userId,
+        identifierNick: '11',
+        accountType: opts.accountType,
+        userSig: opts.userSig
+    };
+    console.debug('initIM');
+    IM.login(loginInfo, {
+            "onBigGroupMsgNotify": onBigGroupMsgNotify,
+            "onMsgNotify": onMsgNotify
+        },
+        function (resp) {
+            IM.joinGroup(""+opts.roomid+"", opts.userId)
+        },
+        function (err) {
+            alert(err.ErrorInfo);
+        }
+    );
 }
 $("#userId").val("video_"+ parseInt(Math.random()*100000000));
 
@@ -205,7 +265,7 @@ function login( closeLocalMedia ){
         success: function (json) {
             if(json && json.status === 200 ){
                 //一会儿进入房间要用到
-                var userId = json.data.userId;
+                var userId = localGlobal = json.data.userId;
                 var sdkappid = json.data.sdkappid;
                 var accountType = json.data.accountType;
                 var roomid = json.data.roomid;
@@ -234,8 +294,121 @@ function login( closeLocalMedia ){
     })
 }
 
+function onMsgNotify(msgs) {
+    console.log(msgs);
+    var self = this;
+    if (msgs && msgs.length > 0) {
+        var msgsObj = IM.parseMsgs(msgs)
+        msgsObj.textMsgs.forEach((msg) => {
+            var content = JSON.parse(msg.content);
+            if (content.cmd === 'sketchpad') {
+                var body = JSON.parse(content.data.msg);
+                if (body.type == 'request' && body.action == 'currentBoard') {
+                    if (this.$refs.sketchpadCom) {
+                        var currentBoard = this.$refs.sketchpadCom.getCurrentBoard();
+                        var boardBg = this.$refs.sketchpadCom.getBoardBg() || {};
+                        IM.sendBoardMsg({
+                            groupId: this.courseId,
+                            msg: JSON.stringify({
+                                action: body.action,
+                                currentBoard: currentBoard
+                                //,boardBg: JSON.stringify(boardBg)
+                            }),
+                            nickName: this.selfName,
+                            identifier: this.userID
+                        });
+
+                        // 如果有图片则补发图片
+                        var bgUrl = boardBg[currentBoard] && boardBg[currentBoard].url;
+                        if (bgUrl) {
+                            this.sendBoardBgPicMsg(currentBoard, bgUrl);
+                            setTimeout(() => {
+                                this.sendSwitchBoardMsg(currentBoard);
+                        }, 500);
+                        }
+                    }
+                }
+            }
+        })
+    }
+}
+
+function onBigGroupMsgNotify(newMsgList) {
+    console.log(newMsgList);
+    var self = this;
+    if (newMsgList && newMsgList.length > 0) {
+        var msgsObj = IM.parseMsgs(newMsgList)
+        this.msgs = [];
+        this.msgs = this.msgs.concat(msgsObj.textMsgs);
+        if (!this.isRoomCreator) {
+            var whiteBoardMsgs = msgsObj.whiteBoardMsgs || [];
+            whiteBoardMsgs.forEach((item, index) => {
+            (function (index, item) {
+                setTimeout(() => {
+                    self.inputSketchpadData = item;
+            }, index * 50);
+            })(index, item);
+        });
+        }
+    }
+}
+
 function GetQueryString(name) {
     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
     var r = window.location.search.substr(1).match(reg);
     if(r!=null)return  unescape(r[2]); return null;
+}
+
+function checkLeave(){
+    $.ajax({
+        type: "POST",
+        url: quitRoomCgi,
+        dataType: 'json',
+        headers: {'X-CSRF-TOKEN': csrf},
+        data:{
+            token: GetQueryString('token'),
+            timestamp: GetQueryString('timestamp')
+        },
+        success: function (json) {
+            if(json.status !== 200 ){
+                console.log(json.msg);
+            }
+            IM.logout();
+        },
+        error: function (err){
+            console.error(err);
+        }
+    });
+}
+
+function checkQuitUserForRole(userid,success,error) {
+    $.ajax({
+        type: "POST",
+        url: checkUseridCgi,
+        dataType: 'json',
+        headers: {'X-CSRF-TOKEN': csrf},
+        data:{
+            token: GetQueryString('token'),
+            timestamp: GetQueryString('timestamp'),
+            userid: userid
+        },
+        success: success,
+        error: error
+    });
+}
+
+function isCompany(userid,success,error){
+    $.ajax({
+        type: "POST",
+        url: isCompanyCgi,
+        dataType: 'json',
+        headers: {'X-CSRF-TOKEN': csrf},
+        data:{
+            token: GetQueryString('token'),
+            timestamp: GetQueryString('timestamp'),
+            userid: userid
+        },
+        success: success,
+        error: error
+    });
 }
