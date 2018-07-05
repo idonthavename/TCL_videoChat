@@ -6,13 +6,15 @@
     <link rel="stylesheet" type="text/css" href="css/chatweb/index.css?t={{time()}}">
     <link rel="stylesheet" href="css/remodal/remodal.css">
     <link rel="stylesheet" href="css/remodal/remodal-default-theme.css">
+    <link rel="stylesheet" href="css/spop/spop.min.css">
     <script type="text/javascript">
         var csrf = "{{csrf_token()}}";
         var FetchSigCgi = "{{url('/chatweb/conf')}}";
         var checkUseridCgi = "{{url('/chatweb/checkQuitUserForRole')}}";
         var quitRoomCgi = "{{url('/chatweb/quitRoom')}}";
-        var isCompanyCgi = "{{url('/chatweb/isCompany')}}";
+        var onlineWhoRoleIsCgi = "{{url('/chatweb/onlineWhoRoleIs')}}";
         var localGlobal = "";
+        var roomGlobal = 0;
         if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
             var version = parseFloat(RegExp.$1);
             if (version > 2.3) {
@@ -115,7 +117,7 @@
     var vConsole = new VConsole();
 </script>
 @endif
-
+<script type="text/javascript" src="js/spop/spop.min.js"></script>
 <script type="text/javascript" src="js/chatweb/tx.js?t={{time()}}"></script>
 </body>
 </html>

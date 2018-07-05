@@ -27,7 +27,7 @@ Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVid
     Route::post('/conf','IndexController@conf')->name('getConfig');
     Route::post('/quitRoom','IndexController@quitRoom');
     Route::post('/checkQuitUserForRole','IndexController@checkQuitUserForRole');
-    Route::post('/isCompany','IndexController@isCompany');
+    Route::post('/onlineWhoRoleIs','IndexController@onlineWhoRoleIs');
 });
 
 Route::get('/test', function (){

@@ -28,6 +28,8 @@ class CheckVideoChatToken
         if ($token['sign'] !== md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1($timestamp))) abort(404,'链接传递参数出错，请联系老哥');
         if ($request->routeIs('getConfig') || $request->routeIs('getHeader')){
             //if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) abort(404,'已经过有效时间咯，让坐席再给你发一次吧');
+        }else{
+            //if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 7200) abort(404,'已经过有效时间咯，让坐席再给你发一次吧');
         }
         $request->role = $token['role'];
         $request->roomid = $token['roomid'];

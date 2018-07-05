@@ -42,12 +42,14 @@ function onRelayTimeout(msg) {
 }
 
 function createVideoElement( id, isLocal, userid){
-    var openVideo = false;
-    isCompany(userid,function (json) {
+    whoIs(userid,function (json) {
         if (json.status == 200){
-            openVideo = json.data.result;
-            console.log('company is:'+openVideo);
-            if (openVideo) $("#"+id).show();
+            console.log('role is:'+json.data.role);
+            if (!isLocal){
+                var roles = {'anchor':'坐席','supporter':'支援工程师','company':'客户'};
+                spopNotify('success',roles[json.data.role]+'进入房间');
+            }
+            if (json.data.role == 'company') $("#"+id).show();
         }else {
             console.error(json.msg);
         }
@@ -119,13 +121,17 @@ function onRemoteStreamRemove( info ) {
         checkQuitUserForRole(info.userId,
             function (json) {
                 if(json && json.status === 200 ){
-                    $('#modal3Desc').text(json.msg);
-                    $('[data-remodal-id=modal3]').remodal({
-                        modifier: 'with-red-theme',
-                        closeOnEscape: false,
-                        closeOnOutsideClick: true
-                    }).open();
-                    if (json.data.role == "company") $("#wattingForCompany").show();
+                    if (json.data.role == "company"){
+                        $('#modal3Desc').text(json.msg);
+                        $('[data-remodal-id=modal3]').remodal({
+                            modifier: 'with-red-theme',
+                            closeOnEscape: false,
+                            closeOnOutsideClick: true
+                        }).open();
+                        $("#wattingForCompany").show();
+                    }else{
+                        spopNotify('error',json.msg);
+                    }
                 }else{
                     console.error(json.msg);
                 }
@@ -188,7 +194,7 @@ function initRTC(opts){
         sdkAppID: opts.sdkappid,
         appIDAt3rd: opts.sdkappid,
         identifier: opts.userId,
-        identifierNick: '11',
+        identifierNick: '主播',
         accountType: opts.accountType,
         userSig: opts.userSig
     };
@@ -268,7 +274,7 @@ function login( closeLocalMedia ){
                 var userId = localGlobal = json.data.userId;
                 var sdkappid = json.data.sdkappid;
                 var accountType = json.data.accountType;
-                var roomid = json.data.roomid;
+                var roomid = roomGlobal = json.data.roomid;
                 var userSig = json.data.userSig;
                 var privateMapKey = json.data.privMapEncrypt;
                 // 页面处理，显示视频流页面
@@ -373,6 +379,7 @@ function checkLeave(){
             if(json.status !== 200 ){
                 console.log(json.msg);
             }
+            IM.quitGroup(""+roomGlobal+"");
             IM.logout();
         },
         error: function (err){
@@ -397,18 +404,29 @@ function checkQuitUserForRole(userid,success,error) {
     });
 }
 
-function isCompany(userid,success,error){
+function whoIs(userid,success,error){
     $.ajax({
         type: "POST",
-        url: isCompanyCgi,
+        url: onlineWhoRoleIsCgi,
         dataType: 'json',
         headers: {'X-CSRF-TOKEN': csrf},
         data:{
             token: GetQueryString('token'),
             timestamp: GetQueryString('timestamp'),
-            userid: userid
+            userid: userid,
         },
         success: success,
         error: error
+    });
+}
+
+function spopNotify(type, msg){
+    //type(default/success/error/warning)
+    spop({
+        template: msg,
+        group: 'tcl-videochat',
+        style: type,
+        autoclose: 5000,
+        position  : 'top-left',
     });
 }

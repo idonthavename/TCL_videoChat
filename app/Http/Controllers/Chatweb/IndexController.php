@@ -41,7 +41,7 @@ class IndexController extends Controller
                     $supporters[] = $this->tx_config['userid'];
                     $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,implode(',',$supporters));
                 }elseif (!in_array($this->tx_config['userid'],$supporters) && $supporterNum >= 2){
-                    return response()->json(['status'=>-200,'msg'=>'亲，您不在援交者名单上哦。']);
+                    return response()->json(['status'=>-200,'msg'=>'亲，您不在援助者名单上哦。']);
                 }
                 break;
             default:
@@ -64,8 +64,8 @@ class IndexController extends Controller
         //生成userSig
         $userSig = $txsdk->genUserSig($this->tx_config['userid']);
 
-        return response()->json([
-           'status'=>200,
+        $ret = [
+            'status'=>200,
             'msg'=>'Success',
             'data'=>[
                 'userId'=>$this->tx_config['userid'],
@@ -74,9 +74,11 @@ class IndexController extends Controller
                 'roomid'=>$this->tx_config['roomid'],
                 'original'=>$this->tx_config['original'],
                 'userSig'=>$userSig,
-                'privMapEncrypt'=>$privMapEncrypt
+                'privMapEncrypt'=>$privMapEncrypt,
+                'anchorIsOnline'=>$request->role == 'company' ? $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor') : '',
             ]
-        ]);
+        ];
+        return response()->json($ret);
     }
 
     //退出房间，只记录五秒
@@ -121,14 +123,33 @@ class IndexController extends Controller
         }
     }
 
-    //是否客户
-    public function isCompany(Request $request){
+    //查找在线角色
+    public function onlineWhoRoleIs(Request $request){
         $userid = strip_tags($request->input('userid',''));
         $ret = ['status'=>-200,'msg'=>'用户不存在'];
         if (!$userid) return response()->json($ret);
-        $companyid = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,'company');
-        $ret = ['status'=>200,'msg'=>'Success'];
-        $ret['data'] = $companyid === $userid ? ['result'=>true] : ['result'=>false];
+        $rolerData = $this->redis->hgetall('TCL_WEBRTCROOM_'.$request->roomid);
+        if (!is_array($rolerData) || empty($rolerData) || count($rolerData) < 1) return response()->json($ret);
+        foreach ($rolerData as $key=>$val){
+            switch ($key){
+                case 'supporter':
+                    $supporters = explode(',',$val);
+                    if (in_array($userid,$supporters)){
+                        $ret['status'] = 200;
+                        $ret['msg'] = 'Is found';
+                        $ret['data'] = ['role'=>$key];
+                        return response()->json($ret);
+                    }
+                break;
+                default:
+                    if ($val == $userid){
+                        $ret['status'] = 200;
+                        $ret['msg'] = 'Is found';
+                        $ret['data'] = ['role'=>$key];
+                        return response()->json($ret);
+                    }
+            }
+        }
         return response()->json($ret);
     }
 }

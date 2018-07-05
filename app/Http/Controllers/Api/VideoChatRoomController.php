@@ -38,6 +38,8 @@ class VideoChatRoomController extends Controller
         $this->content['status'] = 200;
         $this->content['msg'] = 'Success';
         $this->content['data'] = ['url'=>$url];
+        $redis = app('redis.connection');
+        $redis->del('TCL_WEBRTCROOM_'.$roomid);
         return response()->json($this->content);
     }
 }

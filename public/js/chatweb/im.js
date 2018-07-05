@@ -85,6 +85,21 @@ var IM = (function () {
 
   }
 
+  function quitGroup(groupId) {
+    var options = {
+      'GroupId': groupId //群id
+    }
+    webim.quitBigGroup(
+        options,
+        function (resp) {
+          webim.Log.info('退群成功');
+        },
+        function (err) {
+          console.debug(err.ErrorInfo);
+        }
+    )
+  }
+
 
   function parseMsgs(newMsgList) {
     var textMsgs = [];
@@ -254,6 +269,7 @@ var IM = (function () {
     sendRoomTextMsg: sendRoomTextMsg,
     createGroup: createGroup,
     joinGroup: joinGroup,
+    quitGroup: quitGroup,
     parseMsg: parseMsg,
     parseMsgs: parseMsgs,
     sendMsg: sendMsg,
