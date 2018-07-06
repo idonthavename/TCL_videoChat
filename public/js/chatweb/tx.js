@@ -17,7 +17,7 @@
 //不要把您的sdkappid填进来就用这个cgi去测，测试demo的cgi没有您的私钥，臣妾做不到啊
 
 //以下判断浏览器是否支持webrtc
-/*navigator.getUserMedia ||
+navigator.getUserMedia ||
 (navigator.getUserMedia = navigator.mozGetUserMedia ||  navigator.webkitGetUserMedia || navigator.msGetUserMedia);
 
 if (!navigator.getUserMedia) {
@@ -26,7 +26,7 @@ if (!navigator.getUserMedia) {
         closeOnEscape: false,
         closeOnOutsideClick: false
     }).open();
-}*/
+}
 
 window.onbeforeunload = function(){
     checkLeave();
@@ -163,6 +163,14 @@ function initRTC(opts){
             /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
             pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
         });
+        if (opts.anchorIsOnline == false && opts.anchorIsOnline != "" && opts.anchorIsOnline != null){
+            $("#modal3Desc").text("坐席还未进入房间，请稍后");
+            $('[data-remodal-id=modal3]').remodal({
+                modifier: 'with-red-theme',
+                closeOnEscape: false,
+                closeOnOutsideClick: true
+            }).open();
+        }
     },function( error ){
         console.error("init error", error)
     });
@@ -277,6 +285,7 @@ function login( closeLocalMedia ){
                 var roomid = roomGlobal = json.data.roomid;
                 var userSig = json.data.userSig;
                 var privateMapKey = json.data.privMapEncrypt;
+                var anchorIsOnline = json.data.anchorIsOnline;
                 // 页面处理，显示视频流页面
                 $("#video-section").show();
                 $("#input-container").hide();
@@ -288,7 +297,8 @@ function login( closeLocalMedia ){
                     "sdkappid": sdkappid,
                     "accountType": accountType,
                     "closeLocalMedia": closeLocalMedia,
-                    "roomid": roomid
+                    "roomid": roomid,
+                    "anchorIsOnline": anchorIsOnline
                 });
             }else{
                 console.error(json);

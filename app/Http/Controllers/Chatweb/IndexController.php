@@ -75,7 +75,7 @@ class IndexController extends Controller
                 'original'=>$this->tx_config['original'],
                 'userSig'=>$userSig,
                 'privMapEncrypt'=>$privMapEncrypt,
-                'anchorIsOnline'=>$request->role == 'company' ? $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor') : '',
+                'anchorIsOnline'=>$request->role == 'company' ? $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor') : 'notAllow',
             ]
         ];
         return response()->json($ret);

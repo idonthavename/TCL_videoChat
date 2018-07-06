@@ -1,0 +1,14 @@
+<webrtc-room id="webrtcroom"
+    roomID="{{roomID}}"
+    userID="{{userID}}"
+    userSig="{{userSig}}"
+    sdkAppID="{{sdkAppID}}"
+    privateMapKey="{{privateMapKey}}"
+    template="1v1"
+    beauty="{{beauty}}"
+    muted="{{muted}}"
+    debug="{{debug}}"
+    bindRoomEvent="onRoomEvent"
+    enableIM="{{enableIM}}"
+    bindIMEvent="onIMEvent">
+</webrtc-room>
