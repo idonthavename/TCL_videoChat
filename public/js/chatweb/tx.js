@@ -163,7 +163,7 @@ function initRTC(opts){
             /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
             pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
         });
-        if (opts.anchorIsOnline == false && opts.anchorIsOnline != "" && opts.anchorIsOnline != null){
+        if (opts.anchorIsOnline == false && opts.anchorIsOnline != "notAllow"){
             $("#modal3Desc").text("坐席还未进入房间，请稍后");
             $('[data-remodal-id=modal3]').remodal({
                 modifier: 'with-red-theme',
