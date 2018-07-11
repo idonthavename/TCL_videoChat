@@ -15,12 +15,12 @@
 						<image src="../Resources/{{muted ? 'mic-dis' : 'mic'}}.png" bindtap="changeMute"></image>
 						<text>声音</text>
 				</view>
-        <!--
+        
 				<view class="img-box">
 						<image src="../Resources/{{debug? 'log' : 'log2'}}.png" bindtap="showLog"></image>
 						<text>日志</text>
 				</view>
-        -->
+        
 		</view>
 		<view class="switchtab">
 				<view bindtap="showComment" class="tab ">

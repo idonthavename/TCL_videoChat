@@ -45,7 +45,7 @@ class IndexController extends Controller
                 }
                 break;
             default:
-                if (!isset($rolerData) || empty($rolerData)){
+                if (!isset($rolerData) || empty($rolerData) || $rolerData == $this->tx_config['userid']){
                     $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,$this->tx_config['userid']);
                 }elseif ($rolerData && $rolerData != $this->tx_config['userid']){
                     return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);

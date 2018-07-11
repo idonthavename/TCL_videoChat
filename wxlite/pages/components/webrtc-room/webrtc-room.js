@@ -49,11 +49,11 @@ Component({
     }, //设置画面比例，取值为'3:4'或者'9:16'
     minBitrate: {
       type: Number,
-      value: 200
+      value: 500
     }, //设置码率范围为[minBitrate,maxBitrate]，四人建议设置为200~400
     maxBitrate: {
       type: Number,
-      value: 300
+      value: 1000
     },
     muted: {
       type: Boolean,

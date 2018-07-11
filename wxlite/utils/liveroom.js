@@ -1338,9 +1338,9 @@ function doMergeRequest(mergeInfo, callback) {
 }
 
 function createMergeInfo(mergeStreams) {
-    console.log("混流原始信息:", JSON.stringify(mergeStreams));
+  console.log("混流原始信息:", JSON.stringify(mergeStreams));
 
-    var smallAnchorWidth = 160;
+  var smallAnchorWidth = 160;
 	var smallAnchorHeight = 240;
 	var offsetHeight = 90;
 	if (bigAnchorWidth < 540 || bigAnchorHeight < 960) {

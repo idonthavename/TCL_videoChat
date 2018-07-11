@@ -30,6 +30,7 @@ if (!navigator.getUserMedia) {
 
 window.onbeforeunload = function(){
     checkLeave();
+    onWebSocketClose();
     return true;
 }
 
@@ -145,7 +146,7 @@ function onRemoteStreamRemove( info ) {
 }
 
 function onWebSocketClose() {
-    WebRTCAPI.quit();
+    RTC.quit();
 }
 
 function initRTC(opts){
