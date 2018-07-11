@@ -35,7 +35,7 @@ class IndexController extends Controller
         $rolerData = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
         switch ($request->role){
             case 'supporter':
-                $supporters = explode(',',$rolerData);
+                $supporters = $rolerData ? explode(',',$rolerData) : [];
                 $supporterNum = count($supporters);
                 if (!in_array($this->tx_config['userid'],$supporters) && $supporterNum < 2){
                     $supporters[] = $this->tx_config['userid'];

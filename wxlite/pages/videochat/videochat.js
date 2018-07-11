@@ -391,12 +391,12 @@ Page({
         self.data.roomID = res.data.roomid;
         self.data.privateMapKey = res.data.privMapEncrypt;
         self.data.original = res.data.original;
-        self.data.anchorIsOnline = res.dataanchorIsOnline;
+        self.data.anchorIsOnline = res.data.anchorIsOnline;
         wx.setStorageSync('tcl_sessionid', self.data.original);
         wx.setStorageSync('webrtc_room_userid', self.data.userID);
 
         setTimeout(() => {
-          if (!self.data.anchorIsOnline && self.data.anchorIsOnline != "notAllow") {
+          if (self.data.anchorIsOnline == 0 && self.data.anchorIsOnline != "notAllow") {
             wx.showModal({
               title: '提示',
               content: '坐席还未进入房间，请稍后',
@@ -598,6 +598,7 @@ Page({
    */
   onUnload: function () {
     console.log('room.js onUnload');
+    this.data.webrtcroomComponent.stop();
     webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original);
   },
 

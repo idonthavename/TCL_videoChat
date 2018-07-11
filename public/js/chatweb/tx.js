@@ -49,7 +49,10 @@ function createVideoElement( id, isLocal, userid){
                 var roles = {'anchor':'坐席','supporter':'支援工程师','company':'客户'};
                 spopNotify('success',roles[json.data.role]+'进入房间');
             }
-            if (json.data.role == 'company') $("#"+id).show();
+            if (json.data.role == 'company') {
+                $("#wattingForCompany").hide();
+                $("#"+id).show();
+            }
         }else {
             console.error(json.msg);
         }
@@ -58,7 +61,7 @@ function createVideoElement( id, isLocal, userid){
         alert('视频初始化失败');
     });
     var videoDiv=document.createElement("div");
-    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p01.jpg" width="640" height="1136" style="display: none;"></video>';
+    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p01.jpg" width="100%" height="100%" style="display: none;"></video>';
     document.querySelector("#remote-video-wrap").appendChild(videoDiv);
     return document.getElementById(id);
 }
@@ -103,7 +106,6 @@ function onRemoteStreamUpdate( info ) {
             video = createVideoElement(id, false, info.userId);
         }
         video.srcObject = info.stream;
-        $("#wattingForCompany").hide();
     } else{
         console.log('欢迎用户'+ info.userId+ '加入房间');
     }
@@ -163,7 +165,7 @@ function initRTC(opts){
             /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
             pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
         });
-        if (opts.anchorIsOnline == false && opts.anchorIsOnline != "notAllow"){
+        if (opts.anchorIsOnline == 0 && opts.anchorIsOnline != "notAllow"){
             $("#modal3Desc").text("坐席还未进入房间，请稍后");
             $('[data-remodal-id=modal3]').remodal({
                 modifier: 'with-red-theme',

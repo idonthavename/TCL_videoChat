@@ -9,7 +9,7 @@ var config = {
   webrtcServerUrl: 'https://xzb.qcloud.com/webrtc/weapp/webrtc_room',
 
   //tcl
-  tclServiceUrl: 'https://10.68.213.239/videochat/public/chatweb/'
+  tclServiceUrl: 'https://videochat.koyoo.cn/chatweb'
 }
 
 module.exports = config;

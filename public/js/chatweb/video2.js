@@ -158,11 +158,11 @@ function start(){
 }
 
 function videoEnd(){
+    checkLeave();
+    onWebSocketClose();
     $(".stopVid").unbind();
     $(".page2").addClass("on");
     $(".vid").css({"opacity":"0",'transition':'opacity .5s ease-out'});
-    stopRTC();
-    checkLeave();
     //video.pause();
     //setTimeout(showPage4,2500);
 }

@@ -37,6 +37,10 @@ var webrtcroom = {
             errCode: res.data.code,
             errMsg: res.data.message
           })
+          wx.showModal({
+            title: '提示',
+            content: '服务器请求失败',
+          })
           return;
         }
         options.success && options.success(res);
@@ -137,7 +141,8 @@ var webrtcroom = {
   enterRoom: function (userID, roomID, success, fail) {
     var self = this;
     self.request({
-      url: 'http://10.68.213.239/videochat/public/chatweb/conf',
+      // url: 'http://10.68.213.239/videochat/public/chatweb/conf',
+      url: config.tclServiceUrl +'/conf',
       data: {
         userID: userID,
         roomID: roomID,
@@ -161,7 +166,8 @@ var webrtcroom = {
       })
     }else{
       self.request({
-        url: 'http://10.68.213.239/videochat/public/chatweb/quitRoom',
+        // url: 'http://10.68.213.239/videochat/public/chatweb/quitRoom',
+        url: config.tclServiceUrl +'/quitRoom',
         data: {
           original: original,
           token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
@@ -180,7 +186,8 @@ var webrtcroom = {
   imInTclRoomNotify: function (userID, success, fail) {
     var self = this;
     self.request({
-      url: 'http://10.68.213.239/videochat/public/chatweb/onlineWhoRoleIs',
+      // url: 'http://10.68.213.239/videochat/public/chatweb/onlineWhoRoleIs',
+      url: config.tclServiceUrl +'/onlineWhoRoleIs',
       data: {
         userid: userID,
         token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
@@ -197,7 +204,8 @@ var webrtcroom = {
   imQuitTclRoomNotify: function (userID, success, fail) {
     var self = this;
     self.request({
-      url: 'http://10.68.213.239/videochat/public/chatweb/checkQuitUserForRole',
+      //url: 'http://10.68.213.239/videochat/public/chatweb/checkQuitUserForRole',
+      url: config.tclServiceUrl +'/checkQuitUserForRole',
       data: {
         userid: userID,
         token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",

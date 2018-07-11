@@ -20,7 +20,7 @@ img{display:block;outline:0}
 .page2{top:0;left:0;visibility:hidden;overflow:hidden;width:100%;height:100%;background:url(../../images/chatweb/gd_bg.jpg) no-repeat;background-size:cover;opacity:0;transition:opacity .3s ease-out}
 .gd_pic01{top:140px;left:50%;margin-left:-256px}
 .gd_pic02{right:70px;bottom:50px}
-video{outline:0;vertical-align:baseline;line-height:0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+video{outline:0;vertical-align:top;line-height:0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
 .page{position:relative;overflow:hidden;width:100%;height:100%}
 .scpage{width:640px;height:1136px}
 .page4{position:absolute;top:0;left:0;visibility:hidden;width:640px;height:100%;background-color:#6fc4ba;opacity:0;transition:opacity .6s ease-out}
