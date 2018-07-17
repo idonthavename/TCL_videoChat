@@ -22,6 +22,7 @@ class CheckVideoChatToken
         if (!$token || !$timestamp) abort(404,'抱歉你的页面去了外太空');
         $token = Crypt::decrypt($token);
         $token['roomid'] = intval($token['roomid']);
+        $token['third_id'] = intval($token['third_id']);
         $roleAllow = ['anchor','supporter','company'];
         if (!in_array($token['role'],$roleAllow)) abort(404,'抱歉，您没有权限进去该房间');
         if ($token['roomid'] <= 0 || !$token['sign']) abort(404,'链接传递参数出错，请联系老哥');
@@ -33,6 +34,7 @@ class CheckVideoChatToken
         }
         $request->role = $token['role'];
         $request->roomid = $token['roomid'];
+        $request->third_id = $token['third_id'];
         return $next($request);
     }
 }

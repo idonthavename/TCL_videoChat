@@ -18,9 +18,10 @@ class VideoChatRoomController extends Controller
         ];
     }
 
-    public function roomAddress($role = '',$roomid = ''){
+    public function roomAddress($role = '',$roomid = '',$third_id = 0){
         $role = strip_tags($role);
         $roomid = intval($roomid);
+        $third_id = intval($third_id);
         $roleAllow = ['anchor','supporter','company'];
         if (!in_array($role,$roleAllow) || !$role) return response()->json($this->content);
         if (!$roomid || empty($roomid) || !isset($roomid)) return response()->json($this->content);
@@ -31,6 +32,7 @@ class VideoChatRoomController extends Controller
                 Crypt::encrypt([
                     'roomid'=>$roomid,
                     'role'=>$role,
+                    'third_id'=>$third_id,
                     'sign'=>md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1(time()))
                 ]),
             'timestamp'=>time()

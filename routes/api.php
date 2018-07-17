@@ -13,13 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
 
 
 Route::middleware('client')->prefix('v1')->group(function (){
-    Route::post('/videoRoom/{role?}/{roomid?}','Api\VideoChatRoomController@roomAddress');
+    Route::post('/videoRoom/{role?}/{roomid?}/{third_id?}','Api\VideoChatRoomController@roomAddress');
 });
 
-Route::get('/videoRoom/{role?}/{roomid?}','Api\VideoChatRoomController@roomAddress');
+Route::get('/videoRoom/{role?}/{roomid?}/{third_id?}','Api\VideoChatRoomController@roomAddress');
