@@ -54,6 +54,7 @@ function createVideoElement( id, isLocal, userid){
                 $("#wattingForCompany").hide();
                 $("#"+id).show();
             }else {
+                notifyQMT(1);
                 QMTtimer = window.setInterval("notifyQMT(1)",60000);
             }
         }else {
