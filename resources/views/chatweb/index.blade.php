@@ -13,8 +13,10 @@
         var checkUseridCgi = "{{url('/chatweb/checkQuitUserForRole')}}";
         var quitRoomCgi = "{{url('/chatweb/quitRoom')}}";
         var onlineWhoRoleIsCgi = "{{url('/chatweb/onlineWhoRoleIs')}}";
+        var notifyQMTCgi = "{{url('/chatweb/notifyQMT')}}";
         var localGlobal = "";
         var roomGlobal = 0;
+        var QMTtimer = '';
         if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
             var version = parseFloat(RegExp.$1);
             if (version > 2.3) {
@@ -105,19 +107,19 @@
 <script type="text/javascript" src="js/chatweb/TweenMax.min.js"></script>
 <script type="text/javascript" src="js/chatweb/Draggable.min.js"></script>
 {{--<script type="text/javascript" src="js/chatweb/cache-1.0.min.js"></script>--}}
-<script type="text/javascript" src="js/chatweb/video2.js?t={{time()}}"></script>
 <script type="text/javascript" src="js/remodal/remodal.js"></script>
 {{--<script src="https://sqimg.qq.com/expert_qq/webrtc/latest/WebRTCAPI.min.js"></script>--}}
 <script src="https://sqimg.qq.com/expert_qq/webrtc/2.2/WebRTCAPI.min.js"></script>
 <script type="text/javascript" src="js/chatweb/im.js"></script>
 <script type="text/javascript" src="js/chatweb/webim.js"></script>
-@if(config('app.debug'))
-<script src="https://sxb.qcloud.com/webrtc-samples/assets/libs/vconsole.min.js"></script>
-<script>
-    var vConsole = new VConsole();
-</script>
-@endif
 <script type="text/javascript" src="js/spop/spop.min.js"></script>
 <script type="text/javascript" src="js/chatweb/tx.js?t={{time()}}"></script>
+<script type="text/javascript" src="js/chatweb/video2.js?t={{time()}}"></script>
+@if(config('app.debug'))
+    <script src="https://sxb.qcloud.com/webrtc-samples/assets/libs/vconsole.min.js"></script>
+    <script>
+        var vConsole = new VConsole();
+    </script>
+@endif
 </body>
 </html>

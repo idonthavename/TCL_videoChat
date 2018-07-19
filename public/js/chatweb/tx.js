@@ -53,6 +53,8 @@ function createVideoElement( id, isLocal, userid){
             if (json.data.role == 'company') {
                 $("#wattingForCompany").hide();
                 $("#"+id).show();
+            }else {
+                QMTtimer = window.setInterval("notifyQMT(1)",60000);
             }
         }else {
             console.error(json.msg);
@@ -314,7 +316,7 @@ function login( closeLocalMedia ){
 }
 
 function onMsgNotify(msgs) {
-    console.log(msgs);
+    if (msgs) console.log(msgs);
     var self = this;
     if (msgs && msgs.length > 0) {
         var msgsObj = IM.parseMsgs(msgs)
@@ -353,7 +355,7 @@ function onMsgNotify(msgs) {
 }
 
 function onBigGroupMsgNotify(newMsgList) {
-    console.log(newMsgList);
+    if (newMsgList) console.log(newMsgList);
     var self = this;
     if (newMsgList && newMsgList.length > 0) {
         var msgsObj = IM.parseMsgs(newMsgList)
@@ -379,6 +381,8 @@ function GetQueryString(name) {
 }
 
 function checkLeave(){
+    window.clearTimeout(QMTtimer);
+    notifyQMT(2);
     $.ajax({
         type: "POST",
         url: quitRoomCgi,
@@ -441,5 +445,25 @@ function spopNotify(type, msg){
         style: type,
         autoclose: 5000,
         position  : 'top-left',
+    });
+}
+
+function notifyQMT(type){
+    $.ajax({
+        type: "POST",
+        url: notifyQMTCgi,
+        dataType: 'json',
+        headers: {'X-CSRF-TOKEN': csrf},
+        data:{
+            token: GetQueryString('token'),
+            timestamp: GetQueryString('timestamp'),
+            status: type,
+        },
+        success: function (res) {
+            console.log(res.msg);
+        },
+        error: function (error) {
+            console.debug('心跳失败：'+error);
+        }
     });
 }

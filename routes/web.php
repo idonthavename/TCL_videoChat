@@ -28,6 +28,7 @@ Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVid
     Route::post('/quitRoom','IndexController@quitRoom');
     Route::post('/checkQuitUserForRole','IndexController@checkQuitUserForRole');
     Route::post('/onlineWhoRoleIs','IndexController@onlineWhoRoleIs');
+    Route::post('/notifyQMT','IndexController@notifyQMT');
 });
 
 Route::get('/test', function (){

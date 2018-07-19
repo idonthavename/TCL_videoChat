@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Chatweb;
 
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\WebRTCSigApi;
@@ -127,29 +128,51 @@ class IndexController extends Controller
     public function onlineWhoRoleIs(Request $request){
         $userid = strip_tags($request->input('userid',''));
         $ret = ['status'=>-200,'msg'=>'用户不存在'];
+        $returnRole = '';
         if (!$userid) return response()->json($ret);
         $rolerData = $this->redis->hgetall('TCL_WEBRTCROOM_'.$request->roomid);
         if (!is_array($rolerData) || empty($rolerData) || count($rolerData) < 1) return response()->json($ret);
+
         foreach ($rolerData as $key=>$val){
             switch ($key){
                 case 'supporter':
                     $supporters = explode(',',$val);
                     if (in_array($userid,$supporters)){
-                        $ret['status'] = 200;
-                        $ret['msg'] = 'Is found';
-                        $ret['data'] = ['role'=>$key];
-                        return response()->json($ret);
+                        $returnRole = $key;
                     }
                 break;
                 default:
                     if ($val == $userid){
-                        $ret['status'] = 200;
-                        $ret['msg'] = 'Is found';
-                        $ret['data'] = ['role'=>$key];
-                        return response()->json($ret);
+                        $returnRole = $key;
                     }
             }
         }
+        if ($returnRole){
+            $ret['status'] = 200;
+            $ret['msg'] = 'Is found';
+            $ret['data'] = [
+                'role'=>$returnRole
+            ];
+        }
         return response()->json($ret);
+    }
+
+    public function notifyQMT(Request $request){
+        $status = intval($request->input('status',0));
+        $third_id = $request->third_id;
+        $roomid = $request->roomid;
+        if (is_numeric($status) && $status > 0){
+            $client = new Client();
+            $sendData = ['query'=>['userId'=>$request->third_id,'chatId'=>$request->roomid,'status'=>$status]];
+            $returnQMT = $client->request('GET','http://10.4.62.41:8080/weChatAdapter/videochat/keepStatus',$sendData);
+            $body = json_decode($returnQMT->getBody(),true);
+            if ($returnQMT->getStatusCode() === 200 && $body['success'] === true){
+                return response()->json(['status'=>200,'msg'=>'心跳检测正常']);
+            }else{
+                return response()->json(['status'=>-200,'msg'=>'QMT请求异常']);
+            }
+        }else{
+            return response()->json(['status'=>-200,'msg'=>'参数异常']);
+        }
     }
 }
