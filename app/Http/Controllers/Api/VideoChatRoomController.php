@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Crypt;
@@ -27,21 +28,24 @@ class VideoChatRoomController extends Controller
         if (!$roomid || empty($roomid) || !isset($roomid)) return response()->json($this->content);
 
 
-        $url = route('videoChatPlaying',[
-            'token'=>
-                Crypt::encrypt([
-                    'roomid'=>$roomid,
-                    'role'=>$role,
-                    'third_id'=>$third_id,
-                    'sign'=>md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1(time()))
-                ]),
-            'timestamp'=>time()
-        ]);
+        $url = route('videoChatPlaying');
+        $timestamp = time();
         $this->content['status'] = 200;
         $this->content['msg'] = 'Success';
-        $this->content['data'] = ['url'=>$url];
-        $redis = app('redis.connection');
-        $redis->del('TCL_WEBRTCROOM_'.$roomid);
+        $this->content['data'] = [
+            'url'=>$url,
+            'token'=>urlencode(Crypt::encrypt([
+                'roomid'=>$roomid,
+                'role'=>$role,
+                'third_id'=>$third_id,
+                'sign'=>md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1($timestamp))
+            ])),
+            'timestamp'=>$timestamp
+        ];
+        if ($role == 'anchor'){
+            $redis = app('redis.connection');
+            $redis->del('TCL_WEBRTCROOM_'.$roomid);
+        }
         return response()->json($this->content);
     }
 }

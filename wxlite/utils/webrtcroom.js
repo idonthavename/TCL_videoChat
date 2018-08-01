@@ -72,7 +72,7 @@ var webrtcroom = {
   },
 
 
-  getLoginInfo: function (userID, success, fail) {
+  getLoginInfo: function (userID, token, timestamp, success, fail) {
     var self = this;
     var data = {};
     if (userID) {
@@ -90,7 +90,13 @@ var webrtcroom = {
             fail: function(error){
               wx.showModal({
                 title: '提示',
-                content: '用户取消授权',
+                content: '请先授权',
+                showCancel: false,
+                complete: function(){
+                  wx.redirectTo({
+                    url: '/pages/main/main?token=' + token + '&timestamp=' + timestamp
+                  });
+                }
               })
             }
           })
@@ -138,7 +144,7 @@ var webrtcroom = {
     });
   },
 
-  enterRoom: function (userID, roomID, success, fail) {
+  enterRoom: function (userID, roomID, token, timestamp, success, fail) {
     var self = this;
     self.request({
       // url: 'http://10.68.213.239/videochat/public/chatweb/conf',
@@ -146,8 +152,8 @@ var webrtcroom = {
       data: {
         userID: userID,
         roomID: roomID,
-        token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
-        timestamp: 1530504743,
+        token: token,
+        timestamp: timestamp,
         noNeedDomain : 1
       },
       success: function (res) {
@@ -157,12 +163,13 @@ var webrtcroom = {
     })
   },
 
-  quitRoom: function (userID, roomID, original, success, fail) {
+  quitRoom: function (userID, roomID, original, token, timestamp, success, fail) {
     var self = this;
     if(!original){
       wx.showModal({
         title: '提示',
         content: '退出异常，请联系TCL官方服务号客服',
+        showCancel: false
       })
     }else{
       self.request({
@@ -170,8 +177,8 @@ var webrtcroom = {
         url: config.tclServiceUrl +'/quitRoom',
         data: {
           original: original,
-          token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
-          timestamp: 1530504743,
+          token: token,
+          timestamp: timestamp,
           noNeedDomain: 1
         },
         success: function(re){
@@ -183,15 +190,15 @@ var webrtcroom = {
     self.stopHeartBeat();
   },
 
-  imInTclRoomNotify: function (userID, success, fail) {
+  imInTclRoomNotify: function (userID, token, timestamp, success, fail) {
     var self = this;
     self.request({
       // url: 'http://10.68.213.239/videochat/public/chatweb/onlineWhoRoleIs',
       url: config.tclServiceUrl +'/onlineWhoRoleIs',
       data: {
         userid: userID,
-        token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
-        timestamp: 1530504743,
+        token: token,
+        timestamp: timestamp,
         noNeedDomain: 1
       },
       success: function (res) {
@@ -201,15 +208,15 @@ var webrtcroom = {
     })
   },
 
-  imQuitTclRoomNotify: function (userID, success, fail) {
+  imQuitTclRoomNotify: function (userID, token, timestamp, success, fail) {
     var self = this;
     self.request({
       //url: 'http://10.68.213.239/videochat/public/chatweb/checkQuitUserForRole',
       url: config.tclServiceUrl +'/checkQuitUserForRole',
       data: {
         userid: userID,
-        token: "eyJpdiI6Ik11UjNYUWNwNENDZXVDYXhNT0YwSWc9PSIsInZhbHVlIjoiSG9sR0xsVVZaS1NyUlNHNGx3RjYwUWh2UVVpNlJUemNnWWlNMzl1T1JxZEs0WEg1V0Zzd3F3VEttWEw1ZDQxUW4xVkR6ZUdtRGVRT1BhN2JjTm9cL2VCRHd6K1dRM1FwbkxqQjlKcE5ITmVUQVwvWDgyQ3p3UWY1UWJQSmdPbFpYRWVTMlk0eW9RVDdJdElBdjFRT0d5MGc9PSIsIm1hYyI6ImJhNGU3MzczYzI4YjNkYWUyZTdlMjMzOGVlNTNjYmE5Y2M3YjhlMWVmMjVkNmQwNmNlNzFlOTNlNjk4MzljZTUifQ%3D%3D",
-        timestamp: 1530504743,
+        token: token,
+        timestamp: timestamp,
         noNeedDomain: 1
       },
       success: function (res) {

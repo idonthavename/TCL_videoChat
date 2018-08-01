@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 
 Route::middleware('client')->prefix('v1')->group(function (){
-    Route::post('/videoRoom/{role?}/{roomid?}/{third_id?}','Api\VideoChatRoomController@roomAddress');
+    Route::post('/videoRoom/{role}/{roomid}/{third_id?}','Api\VideoChatRoomController@roomAddress')->where(['role'=>'anchor|supporter|company','roomid'=>'[0-9]+','third_id'=>'[0-9]+']);
 });
 
-Route::get('/videoRoom/{role?}/{roomid?}/{third_id?}','Api\VideoChatRoomController@roomAddress');
+Route::get('/videoRoom/{role}/{roomid}/{third_id?}','Api\VideoChatRoomController@roomAddress')->where(['role'=>'anchor|supporter|company','roomid'=>'[0-9]+','third_id'=>'[0-9]+']);

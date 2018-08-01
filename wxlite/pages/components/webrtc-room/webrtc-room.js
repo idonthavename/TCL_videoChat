@@ -45,15 +45,15 @@ Component({
     }, //美颜程度，取值为0~9
     aspect: {
       type: String,
-      value: '3:4'
+      value: '9:16'
     }, //设置画面比例，取值为'3:4'或者'9:16'
     minBitrate: {
       type: Number,
-      value: 500
+      value: 600
     }, //设置码率范围为[minBitrate,maxBitrate]，四人建议设置为200~400
     maxBitrate: {
       type: Number,
-      value: 1000
+      value: 800
     },
     muted: {
       type: Boolean,

@@ -23,7 +23,7 @@ Page({
     beauty: 5,
     muted: false,
     debug: false,
-    frontCamera: true,
+    frontCamera: false,
     role: ROLE_TYPE.AUDIENCE, // presenter 代表主播，audience 代表观众
     userID: '',
     userSig: '',
@@ -141,7 +141,7 @@ Page({
             var roomInOutInfo = JSON.parse(msg.content[1]);
             if(roomInOutInfo.type == 1){//进入房间
               if (this.data.userID != roomInOutInfo.userIdList){
-                webrtcroom.imInTclRoomNotify(roomInOutInfo.userIdList, function (res) {
+                webrtcroom.imInTclRoomNotify(roomInOutInfo.userIdList, this.data.token, this.data.timestamp, function (res) {
                   if (res.status == 200) {
                     var roles = { 'anchor': '坐席', 'supporter': '支援工程师', 'company': '客户' };
                     wx.showToast({
@@ -157,7 +157,7 @@ Page({
                 });
               }
             }else if(roomInOutInfo.type == 2){//退出房间
-              webrtcroom.imQuitTclRoomNotify(roomInOutInfo.userIdList, function (res) {
+              webrtcroom.imQuitTclRoomNotify(roomInOutInfo.userIdList, this.data.token, this.data.timestamp, function (res) {
                 if (res.status == 200) {
                   wx.showToast({
                     title: res.msg,
@@ -381,7 +381,7 @@ Page({
   enterRoom: function () {
     var self = this;
     console.log(self.data);
-    webrtcroom.enterRoom(self.data.userID, self.data.roomID,
+    webrtcroom.enterRoom(self.data.userID, self.data.roomID, self.data.token, self.data.timestamp,
       function (res) {
         console.log(res)
         self.data.accountType = res.data.accountType;
@@ -485,18 +485,30 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    wx.hideShareMenu();
     this.setData({
       userID: wx.getStorageSync('webrtc_room_userid')
     });
 
-    this.data.roomID = options.roomID || '';
-    // this.data.roomname = options.roomName;
-    this.data.roomname = "xZero的房间";
-    this.data.username = options.userName;
-    this.setData({
-      roomCreator: options.roomCreator || this.data.userID
-    });
-    this.joinRoom();
+    if ((options.token && options.token != '') && options.timestamp > 1500000000){
+      this.data.roomID = options.roomID || '';
+      this.data.username = options.userName;
+      this.data.token = options.token;
+      this.data.timestamp = options.timestamp;
+      this.setData({
+        roomCreator: options.roomCreator || this.data.userID
+      });
+      this.joinRoom();
+    }else{
+      wx.showModal({
+        title: '提示',
+        content: '房间已失效或过期，请联系坐席重新开通音视频房间，谢谢',
+        showCancel: false,
+        complete: function () {
+          return false;
+        }
+      });
+    }
   },
 
   /**
@@ -518,8 +530,13 @@ Page({
     
     webrtcroom.getLoginInfo(
       self.data.userID,
+      self.data.token,
+      self.data.timestamp,
       function (res) {
         self.data.nickName = res.nickName
+        wx.setNavigationBarTitle({
+          title: self.data.nickName + "的房间"
+        });
         self.data.avatarUrl = res.avatarUrl
         self.data.gender = res.gender
         self.data.country = res.country
@@ -553,7 +570,9 @@ Page({
           title: '获取登录信息失败，请重试',
           complete: function () {
             setTimeout(() => {
-              self.goBack();
+              wx.redirectTo({
+                url: '/pages/main/main?token=' + self.data.token + '&timestamp=' + self.data.timestamp
+              });
             }, 1500);
           }
         });
@@ -565,10 +584,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    // 设置房间标题
-    wx.setNavigationBarTitle({
-      title: this.data.roomname
-    });
     // 计算一次白板的宽高
     this.resizeSketchpad();
   },
@@ -591,6 +606,8 @@ Page({
   onHide: function () {
     var self = this;
     console.log('room.js onHide');
+    if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
+    webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
   },
 
   /**
@@ -598,8 +615,8 @@ Page({
    */
   onUnload: function () {
     console.log('room.js onUnload');
-    this.data.webrtcroomComponent.stop();
-    webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original);
+    if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
+    webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
   },
 
   /**
@@ -620,11 +637,12 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-    return {
-      // title: '',
-      path: '/pages/main/main',
-      imageUrl: 'https://mc.qcloudimg.com/static/img/dacf9205fe088ec2fef6f0b781c92510/share.png'
-    }
+    // return {
+    //   title: 'TCL在线音视频',
+    //   path: '/pages/main/main',
+    //   imageUrl: 'https://mc.qcloudimg.com/static/img/dacf9205fe088ec2fef6f0b781c92510/share.png'
+    // }
+    return null;
   },
 
   /**

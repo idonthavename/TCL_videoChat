@@ -29,9 +29,12 @@ if (!navigator.getUserMedia) {
 }
 
 window.onbeforeunload = function(){
+    return true;
+}
+
+window.onunload = function () {
     checkLeave();
     onWebSocketClose();
-    return true;
 }
 
 function onKickout() {
@@ -45,7 +48,7 @@ function onRelayTimeout(msg) {
 function createVideoElement( id, isLocal, userid){
     whoIs(userid,function (json) {
         if (json.status == 200){
-            console.log('role is:'+json.data.role);
+            console.log('local: '+isLocal+' role is:'+json.data.role);
             if (!isLocal){
                 var roles = {'anchor':'坐席','supporter':'支援工程师','company':'客户'};
                 spopNotify('success',roles[json.data.role]+'进入房间');

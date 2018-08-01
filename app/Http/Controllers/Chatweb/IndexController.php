@@ -52,6 +52,8 @@ class IndexController extends Controller
                     return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);
                 }
         }
+        //每次有新成员进入房间刷新redis过期时间
+        $this->redis->expireat('TCL_WEBRTCROOM_'.$request->roomid,time()+(3600*3));
 
         //生成txsdk  start
         $txsdk = new WebRTCSigApi();

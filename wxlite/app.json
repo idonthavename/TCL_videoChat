@@ -1,29 +1,7 @@
 {
     "pages": [
-        
         "pages/main/main",
-        "pages/videochat/videochat",
-        "pages/test/test",
-        "pages/push/push",
-        "pages/push/playqr/playqr",
-        "pages/play/play",
-        "pages/vodplay/vodplay",
-        "pages/rtplay/rtplay",
-        "pages/multiroom/room/room",
-        "pages/multiroom/roomlist/roomlist",
-        "pages/multiroom/roomname/roomname",
-        "pages/doubleroom/roomlist/roomlist",
-        "pages/doubleroom/room/room",
-        "pages/doubleroom/roomname/roomname",
-        "pages/live-phone/roomlist/roomlist",
-        "pages/live-phone/roomname/roomname",
-        "pages/live-pc/roomlist/roomlist",
-        "pages/live-pc/room/liveroom",
-        "pages/live-phone/room/liveroom",
-        "pages/live-pc/roomname/roomname",
-        "pages/webrtcroom/room/room",
-        "pages/webrtcroom/roomlist/roomlist",
-        "pages/webrtcroom/roomname/roomname"
+        "pages/videochat/videochat"
     ],
     "networkTimeout": {
         "request": 60000
@@ -32,7 +10,7 @@
         "backgroundColor": "#888",
         "backgroundTextStyle": "dark",
         "navigationBarBackgroundColor": "#000",
-        "navigationBarTitleText": "腾讯视频云",
+        "navigationBarTitleText": "TCL在线音视频",
         "navigationBarTextStyle": "#fff"
     }
 }

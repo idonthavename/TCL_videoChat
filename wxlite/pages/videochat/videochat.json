@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "WebRTC互通",
+  "navigationBarTitleText": "TCL在线音视频",
   "usingComponents": {
     "webrtc-room": "/pages/components/webrtc-room/webrtc-room",
     "sketchpad": "/pages/components/sketchpad/sketchpad"

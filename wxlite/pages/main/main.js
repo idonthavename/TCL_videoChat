@@ -8,21 +8,13 @@ Page({
     canShow: 0,
     tapTime: '',		// 防止两次点击操作间隔太快
     entryInfos: [
-      { icon: "../Resources/liveroom.png", title: "手机直播", desc: "<live-room>", navigateTo: "../live-phone/roomlist/roomlist" },
-      { icon: "../Resources/liveroom.png", title: "PC直播", desc: "<live-room>", navigateTo: "../live-pc/roomlist/roomlist" },
-      { icon: "../Resources/doubleroom.png", title: "双人通话", desc: "<rtc-room>", navigateTo: "../doubleroom/roomlist/roomlist" },
-      { icon: "../Resources/multiroom.png", title: "多人通话", desc: "<rtc-room>", navigateTo: "../multiroom/roomlist/roomlist" },
-      { icon: "../Resources/push.png", title: "RTMP推流", desc: "<live-pusher>", navigateTo: "../push/push" },
-      { icon: "../Resources/play.png", title: "直播播放", desc: "<live-player>", navigateTo: "../play/play" },
-      { icon: "../Resources/edu_mini.png", title: "互动课堂", desc: "<webrtc-room>", navigateTo: "../webrtcroom/roomlist/roomlist" },
-      { icon: "../Resources/edu_mini.png", title: "tcl", desc: "<webrtc-room>", navigateTo: "../videochat/videochat" },
-      { icon: "../Resources/edu_mini.png", title: "test", desc: "<webrtc-room>", navigateTo: "../test/test" }
+      { icon: "../Resources/edu_mini.png", title: "tcl", desc: "<webrtc-room>", navigateTo: "../videochat/videochat" }
     ]
   },
 
   onEntryTap: function (e) {
     if (this.data.canShow) {
-    // if(1) {
+      // if(1) {
       // 防止两次点击操作间隔太快
       var nowTime = new Date();
       if (nowTime - this.data.tapTime < 1000) {
@@ -48,6 +40,44 @@ Page({
    */
   onLoad: function (options) {
     console.log("onLoad");
+    wx.hideShareMenu();
+    if (!wx.createLivePlayerContext) {
+      wx.showModal({
+        title: '提示',
+        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后再试。',
+        showCancel: false
+      });
+    }else{
+      if (options.token && options.timestamp) {
+        this.setData({
+          token: options.token,
+          timestamp: options.timestamp
+        });
+        var self = this;
+        //查看是否授权
+        wx.getSetting({
+          success: function (res) {
+            if (res.authSetting['scope.userInfo']) {
+              wx.getUserInfo({
+                success: function (res) {
+                  console.log(res.userInfo)
+                  //用户已经授权过
+                  wx.navigateTo({
+                    url: '/pages/videochat/videochat?token=' + self.data.token + '&timestamp=' + self.data.timestamp
+                  })
+                }
+              })
+            }
+          }
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content: '房间已失效或过期，请联系坐席重新开通音视频房间，谢谢',
+          showCancel: false
+        })
+      }
+    }
   },
 
   /**
@@ -55,15 +85,7 @@ Page({
    */
   onReady: function () {
     console.log("onReady");
-    if(!wx.createLivePlayerContext) {
-      setTimeout(function(){
-        wx.showModal({
-          title: '提示',
-          content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后再试。',
-          showCancel: false
-        });
-      },0);
-    } else {
+    if(wx.createLivePlayerContext) {
       // 版本正确，允许进入
       this.data.canShow = 1;
     }
@@ -114,10 +136,20 @@ Page({
    */
   onShareAppMessage: function () {
     console.log("onShareAppMessage");
-    return {
-      title: '腾讯视频云',
-      path: '/pages/main/main',
-      imageUrl: 'https://mc.qcloudimg.com/static/img/dacf9205fe088ec2fef6f0b781c92510/share.png'
+  },
+
+  onGotUserInfo: function (e) {
+    console.log(e.detail.userInfo)
+    if (e.detail.userInfo) {
+      console.log('ok');
+      wx.navigateTo({
+        url: '/pages/videochat/videochat?token=' + this.data.token + '&timestamp=' + this.data.timestamp
+      });
+    } else {
+      wx.showToast({
+        icon: 'none',
+        title: '请勿拒绝授权！'
+      });
     }
   }
 })

@@ -70,3 +70,24 @@
   width: 160rpx;
   height: 44rpx;
 }
+.authorize{
+  text-align: center;
+}
+.auth-btn{
+  width: 80%;
+  background-color: burlywood;
+  color: white;
+  border-radius: 98rpx;
+  margin-top: 35vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.btnIcon {
+  margin-right: 8rpx;
+}
+.auth-btn::after {
+  border-radius: 98rpx;
+  border: 0; 
+}

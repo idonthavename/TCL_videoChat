@@ -2,9 +2,9 @@
  <!-- <view class="mainUI"  style="background-image: url(/pages/Resources/bg.png);">  -->
  <view class="mainUI"> 
   <view class='tips'>
-    <text>以下将展示小程序互动音视频能力，由腾讯云提供技术支持</text>
+    <text>以下将展示小程序互动音视频能力，由TCL酷友提供技术支持</text>
   </view>
-  <view class='guide-box'>
+  <view class='guide-box' style='display:none;'>
     <view wx:for="{{entryInfos}}" wx:key="*this" id="{{index}}" class='guide' bindtap='onEntryTap'>
       <block>
         <image class="guide_icon" src="{{item.icon}}" mode="aspectFit" />
@@ -16,5 +16,10 @@
   <view class='logo-box'>
     <image class='logo' src='../Resources/logo.png'></image>
   </view>
-  <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">获取用户信息</button>
+  <view class='authorize'>
+    <button class='auth-btn' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">
+      <icon class='btnIcon' type="success" color='white' size='20'/>
+      <view>请先登录授权</view>
+    </button>
+  </view>
 </view>

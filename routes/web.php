@@ -19,7 +19,7 @@ Route::get('/', function () {
 Route::group(['prefix'=>'qiniu'],function (){
     Route::get('/','Qiniu\IndexController@index');
     Route::post('/upload','Qiniu\IndexController@upload');
-    Route::get('/play/{mediaName}','Qiniu\IndexController@play');
+    Route::get('/play/{mediaName?}','Qiniu\IndexController@play');
 });
 
 Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVideoChatToken'],function (){
