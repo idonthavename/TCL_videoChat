@@ -460,7 +460,7 @@
             formData.append('media',myjq("#media")[0].files[0]);
             formData.append('_token',myjq('input[name=_token]').val());
             myjq.ajax({
-                url: "/qiniu/upload",
+                url: "/qiniu/upload?token={{$token}}&timestamp={{$timestamp}}",
                 type: 'POST',
                 cache: false,
                 data: formData,

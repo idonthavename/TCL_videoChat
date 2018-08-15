@@ -83,21 +83,21 @@
     <!--page2-->
     <div class="vid abs">
         <p id="wattingForCompany" style="color: white;width: 100%;text-align: center;margin-top: 50%;">请稍后，等待客户接入中..........</p>
-        <img class="vidImg abs" src="images/chatweb/p01.jpg" width="640" />
+        <!--<img class="vidImg abs" src="images/chatweb/p01.jpg" width="640" />-->
         <div id="remote-video-wrap"></div>
         <!--        <video id="mid" src="" width="640" height="1136" preload="preload" poster="music/p01.jpg" x-webkit-airplay="true"-->
         <!--               webkit-playsinline="true">-->
         <!--        </video>-->
         <!--<div class="zaodian abs"></div>-->
-        <img class="stopVid abs on" src="images/chatweb/stopVid.png" />
-        <img class="playVid abs" src="images/chatweb/p1_bar.png" />
+        <img class="stopVid abs on" src="images/chatweb/stopVid.png" style="bottom: 0px;"/>
+        <img class="playVid abs" src="images/chatweb/p1_bar.png"/>
     </div>
 
     <!--page3-->
     <div class="page2 abs">
         <div class="abs p1_pic01">
             <div style="font-size: 2rem; margin-top: 22.3%;">已结束通话....</div>
-            <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;"/>
+            <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;bottom: 0px;"/>
         </div>
     </div>
 </div>

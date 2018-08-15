@@ -62,5 +62,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'client' => CheckClientCredentials::class,
         'checkVideoChatToken'=>\App\Http\Middleware\CheckVideoChatToken::class,
+        'crossHttp'=>\App\Http\Middleware\CrossHttp::class,
     ];
 }

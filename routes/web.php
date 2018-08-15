@@ -16,10 +16,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix'=>'qiniu'],function (){
+Route::group(['prefix'=>'qiniu','middleware'=>'crossHttp'],function (){
     Route::get('/','Qiniu\IndexController@index');
-    Route::post('/upload','Qiniu\IndexController@upload');
-    Route::get('/play/{mediaName?}','Qiniu\IndexController@play');
+    Route::post('/upload','Qiniu\IndexController@upload')->name('qiniuUpload');
+    Route::options('/upload','Qiniu\IndexController@upload');
+    Route::get('/play/{mediaName}','Qiniu\IndexController@play')->name('qiniuFile');
 });
 
 Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVideoChatToken'],function (){
@@ -31,6 +32,7 @@ Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVid
     Route::post('/notifyQMT','IndexController@notifyQMT');
 });
 
+/*
 Route::get('/test', function (){
     $guzzle = new GuzzleHttp\Client;
 
@@ -46,7 +48,8 @@ Route::get('/test', function (){
     return json_decode((string) $response->getBody(), true);
 });
 
-//注册登录
-//Auth::routes();
-//
-//Route::get('/home', 'HomeController@index')->name('home');
+注册登录
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+*/
