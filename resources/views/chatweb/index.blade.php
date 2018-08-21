@@ -63,15 +63,14 @@
 </div>
 
 <div class="holder">
-    <img src="images/chatweb/share.jpg" style="position: absolute; top: 0;left: 0;opacity: 0;">
+    <img src="images/chatweb/share.png" style="position: absolute; top: 0;left: 0;opacity: 0;">
 
     <!--page1-->
     <div class="page1 abs">
         <!--<img class="abs p1_pic01" src="images/chatweb/p1_pic01.png" />-->
         <div class="abs p1_pic01">
-            <img src="images/chatweb/share.jpg" style="width: 200px;height: 200px;border-radius: 200px;">
-            <div style="font-size: 2rem; margin-top: 0.5rem;">前任</div>
-            <div style="font-size: 1rem;">连接中</div>
+            <img src="images/chatweb/share.png" style="width: 128px;height: 128px;border-radius: 128px;">
+            <div style="font-size: 1.6rem; margin-top: 2rem;">连接中...</div>
         </div>
         <!--<img class="abs p1_pic02" src="images/chatweb/p1_pic02.png" />-->
         <div class="abs p1_box" id="drag_box">

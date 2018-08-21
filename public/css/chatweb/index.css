@@ -1,10 +1,10 @@
 *{margin:0;padding:0}
-body{overflow:hidden;width:100%;height:100%;background-color:#000}
+body{overflow:hidden;width:100%;height:100%;background-color:#000;background-image: url("../../images/chatweb/pc-bg.png");background-repeat: no-repeat;background-position: top right;}
 img{display:block;outline:0}
 .abs{position:absolute}
 .page1.on{display:block}
-.page1{top:0;left:0;overflow:hidden;width:640px;height:100%;background:url(../../images/chatweb/p1_bg.jpg) no-repeat;background-color:#000;background-size:cover}
-.page1 .p1_pic01{top:22.3%;left:33.2%;color:#fff;text-align:center}
+.page1{top:0;left:0;overflow:hidden;width:640px;height:100%;background:url(../../images/chatweb/p1_bg.png) no-repeat;background-color:#000;background-size:cover}
+.page1 .p1_pic01{top: 25.3%;left: 41.2%;color:#fff;text-align:center;}
 .page2 .p1_pic01{width:100%;height:100%;color:#fff;text-align:center}
 .page1 .p1_pic02{top:65%;left:20%}
 .page1 #drag_bar{padding:6px}
@@ -17,7 +17,7 @@ img{display:block;outline:0}
 .playVid.on,.stopVid.on{display:block}
 .vidImg{top:0;left:0}
 .page2.on{visibility:visible;opacity:1}
-.page2{top:0;left:0;visibility:hidden;overflow:hidden;width:100%;height:100%;background:url(../../images/chatweb/gd_bg.jpg) no-repeat;background-size:cover;opacity:0;transition:opacity .3s ease-out}
+.page2{top:0;left:0;visibility:hidden;overflow:hidden;width:100%;height:100%;background:url(../../images/chatweb/gd_bg.png) no-repeat;background-size:cover;opacity:0;transition:opacity .3s ease-out}
 .gd_pic01{top:140px;left:50%;margin-left:-256px}
 .gd_pic02{right:70px;bottom:50px}
 video{outline:0;vertical-align:top;line-height:0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}

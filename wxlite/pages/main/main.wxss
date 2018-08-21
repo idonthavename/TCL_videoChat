@@ -3,7 +3,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-image: url(https://mc.qcloudimg.com/static/img/fae52dbeb369a1f6a6b91e80a60485cf/bg.png);
+  background-image: url(https://videochat.koyoo.cn/images/chatweb/gd_bg.png);
   background-color: #1F2531;
   background-repeat:no-repeat;
   background-size: cover;
@@ -78,7 +78,7 @@
   background-color: burlywood;
   color: white;
   border-radius: 98rpx;
-  margin-top: 35vh;
+  margin-top: 12vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -90,4 +90,9 @@
 .auth-btn::after {
   border-radius: 98rpx;
   border: 0; 
+}
+.kefu{
+  text-align:center;
+  margin-top:10vh;
+
 }
