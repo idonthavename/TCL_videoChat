@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "WebRTC互通",
-  "usingComponents": {
-    "webrtc-room": "/pages/components/webrtc-room/webrtc-room"
-  }
-}

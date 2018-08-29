@@ -63,8 +63,16 @@ function resetCache(){
 
 
 var video = document.getElementById("mid");
-$(".stopVid").addClass("on");
+//$(".stopVid").addClass("on");
 $(".playVid").removeClass("on");
+
+$(".vid").on('click',function () {
+    if ($(".stopVid").hasClass("fadeIn")){
+        $(".stopVid").removeClass("fadeIn").fadeOut();
+    }else{
+        $(".stopVid").addClass("fadeIn").fadeIn();
+    }
+});
 
 
 

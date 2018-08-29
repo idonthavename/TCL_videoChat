@@ -80,9 +80,11 @@ return [
 
         'mongodb' => [
             'driver'   => 'mongodb',
-            'host'     => env('MONGO_DB_HOST', 'localhost'),
+            'host'     => env('MONGO_DB_HOST', '10.68.9.207'),
             'port'     => env('MONGO_DB_PORT', 27017),
             'database' => env('MONGO_DB_DATABASE', 'videochat'),
+            'username' => 'root',
+            'password' => ':y5$t3A@9Vb3%',
         ],
 
     ],

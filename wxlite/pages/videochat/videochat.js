@@ -419,6 +419,8 @@ Page({
           role: ROLE_TYPE.PRESENTER
         }, function () {
           self.data.webrtcroomComponent.start();
+          //切换摄像头
+          self.data.webrtcroomComponent.switchCamera();
         });
       },
       function (res) {
@@ -487,7 +489,8 @@ Page({
   onLoad: function (options) {
     wx.hideShareMenu();
     this.setData({
-      userID: wx.getStorageSync('webrtc_room_userid')
+      userID: wx.getStorageSync('webrtc_room_userid'),
+      frontCamera: true
     });
 
     if ((options.token && options.token != '') && options.timestamp > 1500000000){
@@ -548,7 +551,7 @@ Page({
         self.setData({
           role: ROLE_TYPE.AUDIENCE
         });
-        
+
         // if (self.data.roomID) {
         //   self.enterRoom();
         // } else {

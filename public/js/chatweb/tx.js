@@ -21,6 +21,7 @@ navigator.getUserMedia ||
 (navigator.getUserMedia = navigator.mozGetUserMedia ||  navigator.webkitGetUserMedia || navigator.msGetUserMedia);
 
 if (!navigator.getUserMedia) {
+    $('#modal2Desc').text("抱歉，您的浏览器不支持WebRTC，请使用谷歌(推荐)、QQ浏览器、Safari(11.1.2以上)");
     $('[data-remodal-id=modal2]').remodal({
         modifier: 'with-red-theme',
         closeOnEscape: false,
@@ -68,7 +69,7 @@ function createVideoElement( id, isLocal, userid){
         alert('视频初始化失败');
     });
     var videoDiv=document.createElement("div");
-    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p01.jpg" width="100%" height="100%" style="display: none;"></video>';
+    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p1_bg.png" width="100%" height="100%" style="display: none;"></video>';
     document.querySelector("#remote-video-wrap").appendChild(videoDiv);
     return document.getElementById(id);
 }
@@ -314,7 +315,14 @@ function login( closeLocalMedia ){
             }
         },
         error: function (err){
-            console.error(err);
+            var data = JSON.parse(err.responseText)
+            $('#modal2Desc').text(err);
+            $('[data-remodal-id=modal2]').remodal({
+                modifier: 'with-red-theme',
+                closeOnEscape: false,
+                closeOnOutsideClick: false,
+
+            }).open();
         }
     })
 }

@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>如此前任来电话了，你接吗？</title>
+    <title>TCL在线音视频服务</title>
     <link rel="stylesheet" type="text/css" href="css/chatweb/index.css?t={{time()}}">
     <link rel="stylesheet" href="css/remodal/remodal.css">
     <link rel="stylesheet" href="css/remodal/remodal-default-theme.css">
@@ -45,9 +45,7 @@
 <div data-remodal-id="modal2" role="dialog" aria-labelledby="modal2Title" aria-describedby="modal2Desc">
     <div>
         <h2 id="modal2Title">提示</h2>
-        <p id="modal2Desc" style="margin-top: 2rem;">
-            抱歉，您的浏览器不支持WebRTC，请使用谷歌(推荐)、QQ浏览器、Safari(11.1.2以上)
-        </p>
+        <p id="modal2Desc" style="margin-top: 2rem;"></p>
     </div>
     <br>
     {{--<button data-remodal-action="confirm" class="remodal-confirm">Hello!</button>--}}
@@ -88,7 +86,7 @@
         <!--               webkit-playsinline="true">-->
         <!--        </video>-->
         <!--<div class="zaodian abs"></div>-->
-        <img class="stopVid abs on" src="images/chatweb/stopVid.png" style="bottom: 0px;"/>
+        <img class="stopVid abs" src="images/chatweb/stopVid.png" />
         <img class="playVid abs" src="images/chatweb/p1_bar.png"/>
     </div>
 
@@ -96,7 +94,7 @@
     <div class="page2 abs">
         <div class="abs p1_pic01">
             <div style="font-size: 2rem; margin-top: 22.3%;">已结束通话....</div>
-            <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;bottom: 0px;"/>
+            <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;"/>
         </div>
     </div>
 </div>
