@@ -27,10 +27,13 @@ class CheckVideoChatToken
         if (!in_array($token['role'],$roleAllow)) abort(404,'抱歉，您没有权限进去该房间');
         if ($token['roomid'] <= 0 || !$token['sign']) abort(404,'链接传递参数出错，请联系客服');
         if ($token['sign'] !== md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1($timestamp))) abort(404,'链接传递参数出错，请联系客服');
+        $error404 = '视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！';
         if ($request->routeIs('getConfig')){
-            //if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) abort(404,'已经过有效时间咯，让坐席再给你发一次吧');
+            if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) return response()->json(['status'=>-100,'msg'=>$error404]);
+        }elseif ($request->routeIs('videoChatPlaying')){
+            if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) abort(404,$error404);
         }else{
-            //if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 7200) abort(404,'已经过有效时间咯，让坐席再给你发一次吧');
+            if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 7200) return response()->json(['status'=>-100,'msg'=>$error404]);
         }
         $request->role = $token['role'];
         $request->roomid = $token['roomid'];

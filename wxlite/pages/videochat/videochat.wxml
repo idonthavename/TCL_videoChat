@@ -1,6 +1,7 @@
+<image class='fadeImage {{fadeAction}}' src='../Resources/play.png' mode='aspectFit'></image>
 <view class="container-box">
 		<view class="camera-box">
-				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true"></webrtc-room>
+				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" frontCamera="{{frontCamera}}" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true"></webrtc-room>
 		</view>
 		<view class="operate">
 				<view class="img-box">
@@ -22,6 +23,7 @@
 				</view>
         -->
 		</view>
+    <!--
 		<view class="switchtab">
 				<view bindtap="showComment" class="tab ">
 						<view class="text {{showInteractType === SHOWINTERACT_TYPE.COMMENT ? 'checked' : ''}}">
@@ -45,11 +47,12 @@
 						</scroll-view>
 						<view class="comment-input">
 								<input value="{{inputMsg}}" maxlength="50" bindinput="bindInputMsg" placeholder="输入文字内容" confirm-type="send" bindconfirm="sendComment" cursor-spacing="5" />
-								<!-- <button bindtap="sendComment">发送</button> -->
+								<button bindtap="sendComment">发送</button>
 						</view>
 				</view>
 				<view class="board_box {{showInteractType === SHOWINTERACT_TYPE.BOARD ? '' : 'hide'}}">
 						<sketchpad id="white_board" class="sketchpad" height="{{ sketchpad.height }}" width="{{ sketchpad.width }}"></sketchpad>
 				</view>
 		</view>
+    -->
 </view>

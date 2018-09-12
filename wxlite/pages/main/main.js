@@ -39,8 +39,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    options.token = "eyJpdiI6IkhnWEFZT0U2OTIxdGF4MEYzNGZ2RXc9PSIsInZhbHVlIjoiM1RicWluaW5KOGxGcGY3VzM0TEI5aEduem52RE5pbGFoSXhxeVwvSVJ2RW82RWdSRWphc1wvcktoN0dEZENLT0RUcXJkd05sakt3cmxjTVQzeWdkNFZwaW5mYzQyN1BlaU9sODJGUUpHQTFEVlwvaktpeU9teVwvN2hkUjh6QWpVaHJRM3JLZDJUVzcwN01Lb0l1aUxzQkxTM0krUWlXTmcwcjcyTWl1ZzdpdytFTT0iLCJtYWMiOiJmY2M0Mzc4OTJjNWQ2ZGI1YWQwYTk0N2MzZWU1MTkxYWQ4YTA4YzYyYzdiOGNkOTkwMWI4ZGE3OWVjZjgyZGM3In0%3D";
-    options.timestamp = 1534313786;
     console.log("onLoad");
     wx.hideShareMenu();
     if (!wx.createLivePlayerContext) {
@@ -73,10 +71,8 @@ Page({
           }
         })
       } else {
-        wx.showModal({
-          title: '提示',
-          content: '房间已失效或过期，请联系坐席重新开通音视频房间，谢谢',
-          showCancel: false
+        wx.redirectTo({
+          url: '/pages/error/error'
         })
       }
     }

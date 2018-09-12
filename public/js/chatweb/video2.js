@@ -271,3 +271,6 @@ function CloseWebPage(){
 var _dragDistance = drag[0];
 _dragDistance.enable();
 
+$(document).ready(function () {
+    hiddenPage1();
+});

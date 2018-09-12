@@ -78,6 +78,21 @@ return [
             'access'    => 'private'  //空间访问控制 public 或 private
         ],
 
+        /*'qiniu' => [
+            'driver'  => 'qiniu',
+            'domains' => [
+                'default'   => 'kycloud1.koyoo.cn', //你的七牛域名
+                'https'     => 'kycloud1.koyoo.cn',         //你的HTTPS域名
+                'custom'    => 'static.abc.com',                //Useless 没啥用，请直接使用上面的 default 项
+            ],
+            'access_key'=> 'c-GaNPLvrcWyAP9zZysn0wFL-7aOhzxgYLQW8VgV',  //AccessKey
+            'secret_key'=> 'f6Fb9Ny4riOmO6IsLjUqiS-Nj5BgSmVE0KGvYOzE',  //SecretKey
+            'bucket'    => 'koyoo-video-chat',  //Bucket名字
+            'notify_url'=> '',  //持久化处理回调地址
+            'access'    => 'private'  //空间访问控制 public 或 private
+        ],*/
+
+
     ],
 
 ];

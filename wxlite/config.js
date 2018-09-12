@@ -9,7 +9,9 @@ var config = {
   webrtcServerUrl: 'https://xzb.qcloud.com/webrtc/weapp/webrtc_room',
 
   //tcl
-  tclServiceUrl: 'https://videochat.tcl.com/chatweb'
+  tclServiceUrl: 'https://videochat.tcl.com/chatweb',
+  //tcl cross confirm url
+  tclTestUrl: 'https://videochat.tcl.com/test',
 }
 
 module.exports = config;

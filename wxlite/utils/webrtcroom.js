@@ -34,12 +34,11 @@ var webrtcroom = {
         if ((!options.data.noNeedDomain && res.data.code) || (options.data.noNeedDomain && res.data.status !== 200)) {
           console.error('服务器请求失败' + ', url=' + options.url + ', params = ' + (options.data ? JSON.stringify(options.data) : '') + ', 错误信息=' + JSON.stringify(res));
           options.fail && options.fail({
-            errCode: res.data.code,
-            errMsg: res.data.message
+            errCode: res.data.status,
+            errMsg: res.data.msg
           })
-          wx.showModal({
-            title: '提示',
-            content: '服务器请求失败',
+          wx.redirectTo({
+            url: '/pages/error/error?content=' + (res.data.msg ? res.data.msg : '服务器请求失败')
           })
           return;
         }
@@ -166,11 +165,7 @@ var webrtcroom = {
   quitRoom: function (userID, roomID, original, token, timestamp, success, fail) {
     var self = this;
     if(!original){
-      wx.showModal({
-        title: '提示',
-        content: '退出异常，请联系TCL官方服务号客服',
-        showCancel: false
-      })
+      console.error('退出异常，请联系TCL官方服务号客服');
     }else{
       self.request({
         // url: 'http://10.68.213.239/videochat/public/chatweb/quitRoom',
@@ -215,6 +210,22 @@ var webrtcroom = {
       url: config.tclServiceUrl +'/checkQuitUserForRole',
       data: {
         userid: userID,
+        token: token,
+        timestamp: timestamp,
+        noNeedDomain: 1
+      },
+      success: function (res) {
+        success && success(res.data);
+      },
+      fail: fail
+    })
+  },
+
+  anchorIsOnline: function (token, timestamp, success, fail) {
+    var self = this;
+    self.request({
+      url: config.tclServiceUrl + '/anchorIsOnline',
+      data: {
         token: token,
         timestamp: timestamp,
         noNeedDomain: 1

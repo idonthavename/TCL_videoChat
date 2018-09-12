@@ -69,7 +69,7 @@ function createVideoElement( id, isLocal, userid){
         alert('视频初始化失败');
     });
     var videoDiv=document.createElement("div");
-    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p1_bg.png" width="100%" height="100%" style="display: none;"></video>';
+    videoDiv.innerHTML = '<video id="'+id+'" autoplay '+ (isLocal ? 'muted' : '') +' playsinline poster="images/chatweb/p1_bg.png" class="companyVideo" style="display: none;"></video>';
     document.querySelector("#remote-video-wrap").appendChild(videoDiv);
     return document.getElementById(id);
 }
@@ -312,6 +312,7 @@ function login( closeLocalMedia ){
                 });
             }else{
                 console.error(json);
+                spopNotify(json.msg);
             }
         },
         error: function (err){

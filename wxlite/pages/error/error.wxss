@@ -1,0 +1,7 @@
+.body{background: #fff;height:100vh;}
+.pic{text-align: center;}
+.pic image{margin-top: 20vh;width: 210px;height:161px;}
+.content{text-align: center;line-height: 1.4rem;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size: 0.8rem;font-weight: 500;color: #888888;padding: 1rem;}
+.one{margin-top: 20px;}
+.two{margin-top: -20px;text-indent: 2rem;}
+.text-left{text-align: left;}

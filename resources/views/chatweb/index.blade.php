@@ -64,13 +64,11 @@
     <img src="images/chatweb/share.png" style="position: absolute; top: 0;left: 0;opacity: 0;">
 
     <!--page1-->
-    <div class="page1 abs">
-        <!--<img class="abs p1_pic01" src="images/chatweb/p1_pic01.png" />-->
+    <div class="page1 abs" style="display: none;">
         <div class="abs p1_pic01">
             <img src="images/chatweb/share.png" style="width: 128px;height: 128px;border-radius: 128px;">
             <div style="font-size: 1.6rem; margin-top: 2rem;">连接中...</div>
         </div>
-        <!--<img class="abs p1_pic02" src="images/chatweb/p1_pic02.png" />-->
         <div class="abs p1_box" id="drag_box">
             <canvas id="canvas" width="189" height="47"></canvas>
             <img id="drag_bar" src="images/chatweb/p1_bar.png" />

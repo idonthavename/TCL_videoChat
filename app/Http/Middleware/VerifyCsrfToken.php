@@ -18,6 +18,7 @@ class VerifyCsrfToken extends Middleware
         'chatweb/checkQuitUserForRole',
         'chatweb/onlineWhoRoleIs',
         'chatweb/notifyQMT',
+        'chatweb/anchorIsOnline',
         'qiniu/upload',
     ];
 }

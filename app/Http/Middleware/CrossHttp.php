@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Carbon\Carbon;
 use Closure;
 
 class CrossHttp
@@ -18,7 +19,8 @@ class CrossHttp
         if ($request->routeIs('qiniuUpload') || $request->routeIs('qiniuFile')){
             $timestamp = $request->input('timestamp','');
             $token = $request->input('token','');
-            if (md5(sha1('TCSM_UPLOADFILE_TO_QINIU').sha1($timestamp)) !== $token) return response()->json(['status'=>-199,'msg'=>'token校验失败']);
+            if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) return response()->json(['status'=>-199,'msg'=>'token过期']);
+            if (md5(sha1('TCSM_UPLOADFILE_TO_QINIU').sha1($timestamp)) !== $token) return response()->json(['status'=>-198,'msg'=>'token校验失败']);
         }
         $response = $next($request);
         $response->header('Access-Control-Allow-Origin', '*');

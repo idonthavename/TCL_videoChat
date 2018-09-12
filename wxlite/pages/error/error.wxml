@@ -1,0 +1,18 @@
+<view class="body">
+  <view class="header">
+    <view class="pic"><image src="../Resources/error.png"></image></view>
+    
+    <view wx:if="{{content}}" class="content one">
+      {{content}}
+    </view>
+
+    <view wx:else class="content text-left">
+      <view>尊敬的用户： </view>
+      <text>\n</text>
+      <view class='two'>
+        该小程序为您提供远程视频服务支持，使用前，请关注“TCL官方服务”公众号，在“为您服务-人工客服”页面联系客服人员发起视频邀请，谢谢！
+      </view>
+    </view>
+
+  </view>
+</view>

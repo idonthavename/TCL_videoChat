@@ -1,6 +1,7 @@
 var webrtcroom = require('../../utils/webrtcroom.js')
 var imHandler = require('./im_handler.js')
 var webim = require('./webim_wx');
+var fadeActionTimer;
 
 const SHOWINTERACT_TYPE = {
   BOARD: 1, // 白板
@@ -23,7 +24,8 @@ Page({
     beauty: 5,
     muted: false,
     debug: false,
-    frontCamera: false,
+    frontCamera: true,
+    fadeAction: '',
     role: ROLE_TYPE.AUDIENCE, // presenter 代表主播，audience 代表观众
     userID: '',
     userSig: '',
@@ -159,10 +161,10 @@ Page({
             }else if(roomInOutInfo.type == 2){//退出房间
               webrtcroom.imQuitTclRoomNotify(roomInOutInfo.userIdList, this.data.token, this.data.timestamp, function (res) {
                 if (res.status == 200) {
-                  wx.showToast({
-                    title: res.msg,
-                    icon: 'success',
-                    duration: 3000
+                  wx.showModal({
+                    title: '提示',
+                    content: res.msg,
+                    showCancel: false,
                   })
                 } else {
                   console.log(res.msg)
@@ -395,16 +397,6 @@ Page({
         wx.setStorageSync('tcl_sessionid', self.data.original);
         wx.setStorageSync('webrtc_room_userid', self.data.userID);
 
-        setTimeout(() => {
-          if (self.data.anchorIsOnline == 0 && self.data.anchorIsOnline != "notAllow") {
-            wx.showModal({
-              title: '提示',
-              content: '坐席还未进入房间，请稍后',
-            })
-          }
-        }, 5000);
-        
-
         // 成功进房后发送心跳包
         //self.sendHeartBeat(self.data.userID, self.data.roomID);
 
@@ -419,9 +411,20 @@ Page({
           role: ROLE_TYPE.PRESENTER
         }, function () {
           self.data.webrtcroomComponent.start();
-          //切换摄像头
-          self.data.webrtcroomComponent.switchCamera();
         });
+
+        //初始坐席未进入的提醒
+        setTimeout(() => {
+          if (self.data.anchorIsOnline == 0 && self.data.anchorIsOnline != "notAllow" && !self.data.test) {
+            wx.redirectTo({
+              //url: '/pages/error/error?content=坐席还未进入房间，请稍后再试'
+              url: '/pages/error/error?content=视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！'
+            })
+          }
+        }, 5000);
+
+        //后续坐席是否在线左上角图片效果
+        self.Countdown(self.data.token, self.data.timestamp);
       },
       function (res) {
         console.error(self.data.ERROR_CREATE_ROOM, '进入房间失败[' + res.errCode + ';' + res.errMsg + ']')
@@ -490,7 +493,7 @@ Page({
     wx.hideShareMenu();
     this.setData({
       userID: wx.getStorageSync('webrtc_room_userid'),
-      frontCamera: true
+      frontCamera: false
     });
 
     if ((options.token && options.token != '') && options.timestamp > 1500000000){
@@ -498,6 +501,7 @@ Page({
       this.data.username = options.userName;
       this.data.token = options.token;
       this.data.timestamp = options.timestamp;
+      this.data.test = options.test ? options.test : 0;
       this.setData({
         roomCreator: options.roomCreator || this.data.userID
       });
@@ -607,8 +611,8 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    var self = this;
     console.log('room.js onHide');
+    clearTimeout(fadeActionTimer);
     if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
     webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
   },
@@ -618,6 +622,7 @@ Page({
    */
   onUnload: function () {
     console.log('room.js onUnload');
+    clearTimeout(fadeActionTimer);
     if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
     webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
   },
@@ -802,5 +807,27 @@ Page({
         });
       });
     });
+  },
+
+  //定时执行显示左上角坐席是否在线图标
+  Countdown: function(token, timestamp) {
+    console.log("fade action!");
+    var self = this;
+    self.setData({
+      fadeAction: ''
+    })
+    fadeActionTimer = setTimeout(function () {
+      webrtcroom.anchorIsOnline(token, timestamp,
+        function (res) {
+          if (res.data.anchorIsOnline == true) {
+            self.setData({
+              fadeAction: 'fadeAction'
+            })
+          }
+        }, function () {
+          console.log("坐席out of line");
+        })
+      self.Countdown(token, timestamp);
+    }, 10000);
   }
 })

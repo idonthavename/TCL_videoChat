@@ -13,9 +13,11 @@ class IndexController extends Controller
 {
     private $tx_config;
     private $redis;
+    private $globalContent;
 
     public function __construct(){
         $this->redis = app('redis.connection');
+        $this->globalContent = "视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！";
     }
 
     public function play(){
@@ -31,6 +33,14 @@ class IndexController extends Controller
             'userid'=>md5($request->session()->getId().env('VIDEOCHAT_USER_SALT')),
             'original'=>$request->session()->getId()
         ];
+
+        $anchorIsOnline = false;
+        if ($request->role == 'company'){
+            $anchorIsOnline = $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor');
+            //if (!$anchorIsOnline) return response()->json(['status'=>-250,'msg'=>'亲，坐席还未进入房间哦，请稍等片刻']);
+        }else{
+            $anchorIsOnline = 'notAllow';
+        }
 
         //redis判断角色权限，并限制入场人数
         $rolerData = $this->redis->hget('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
@@ -49,7 +59,8 @@ class IndexController extends Controller
                 if (!isset($rolerData) || empty($rolerData) || $rolerData == $this->tx_config['userid']){
                     $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,$this->tx_config['userid']);
                 }elseif ($rolerData && $rolerData != $this->tx_config['userid']){
-                    return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);
+                    //return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);
+                    return response()->json(['status'=>-200,'msg'=>$this->globalContent]);
                 }
         }
         //每次有新成员进入房间刷新redis过期时间
@@ -78,7 +89,7 @@ class IndexController extends Controller
                 'original'=>$this->tx_config['original'],
                 'userSig'=>$userSig,
                 'privMapEncrypt'=>$privMapEncrypt,
-                'anchorIsOnline'=>$request->role == 'company' ? $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor') : 'notAllow',
+                'anchorIsOnline'=>$anchorIsOnline,
             ]
         ];
         return response()->json($ret);
@@ -106,7 +117,7 @@ class IndexController extends Controller
                     return response()->json(['status'=>200,'msg'=>'退出房间成功']);
                 }
         }
-        return response()->json(['status'=>-200,'msg'=>'退出房间异常']);
+        return response()->json(['status'=>-200,'msg'=>$this->globalContent]);
     }
 
     //检测退出房间的人是谁，向其他用户发送消息（ajax向）
@@ -166,7 +177,12 @@ class IndexController extends Controller
         if (is_numeric($status) && $status > 0){
             $client = new Client();
             $sendData = ['query'=>['userId'=>$request->third_id,'chatId'=>$request->roomid,'status'=>$status]];
-            $returnQMT = $client->request('GET','http://10.4.62.41:8080/weChatAdapter/videochat/keepStatus',$sendData);
+            if (env('DEBUG')){
+                $returnQMT = $client->request('GET','http://10.4.62.41:8080/weChatAdapter/videochat/keepStatus',$sendData);
+            }else{
+
+                $returnQMT = $client->request('GET','http://10.4.28.68:8081/weChatAdapter/videochat/keepStatus',$sendData);
+            }
             $body = json_decode($returnQMT->getBody(),true);
             if ($returnQMT->getStatusCode() === 200 && $body['success'] === true){
                 return response()->json(['status'=>200,'msg'=>'心跳检测正常']);
@@ -176,5 +192,23 @@ class IndexController extends Controller
         }else{
             return response()->json(['status'=>-200,'msg'=>'参数异常']);
         }
+    }
+
+    public function anchorIsOnline(Request $request){
+        $anchorIsOnline = false;
+        if ($request->role == 'company'){
+            $anchorIsOnline = $this->redis->hexists('TCL_WEBRTCROOM_'.$request->roomid,'anchor');
+            //if (!$anchorIsOnline) return response()->json(['status'=>-250,'msg'=>'亲，坐席还未进入房间哦，请稍等片刻']);
+        }else{
+            $anchorIsOnline = 'notAllow';
+        }
+        $ret = [
+            'status'=>200,
+            'msg'=>'Success',
+            'data'=>[
+                'anchorIsOnline'=>$anchorIsOnline,
+            ]
+        ];
+        return response()->json($ret);
     }
 }

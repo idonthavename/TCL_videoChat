@@ -74,7 +74,7 @@ Component({
       value: ''
     },
     
-    frontCamera: {type: Boolean, value: false, observer: function (newVal, oldVal) { this.switchCamera(); }},  //设置前后置摄像头，true表示前置
+    frontCamera: {type: Boolean, value: true, observer: function (newVal, oldVal) { this.switchCamera(); }},  //设置前后置摄像头，true表示前置
   },
   data: {
     requestSigFailCount: 0,

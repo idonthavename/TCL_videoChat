@@ -3,7 +3,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-image: url(https://videochat.koyoo.cn/images/chatweb/gd_bg.png);
+  background-image: url(https://videochat.tcl.com/images/chatweb/gd_bg.png);
   background-color: #1F2531;
   background-repeat:no-repeat;
   background-size: cover;

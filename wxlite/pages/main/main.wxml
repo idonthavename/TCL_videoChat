@@ -13,8 +13,8 @@
       </block>
     </view>
   </view>
-  <view class='kefu'>
-    <image src='https://videochat.koyoo.cn/images/chatweb/tcl_kefu.png'></image>
+  <view class="kefu">
+    <image src="../Resources/tcl_kefu.png"></image>
   </view>
   <view class='logo-box'>
     <!-- <image class='logo' src='../Resources/logo.png'></image> -->
