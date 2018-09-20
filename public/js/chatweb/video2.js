@@ -124,6 +124,7 @@ function hiddenPage1(){
     $(".vid").addClass("on");
     $(".page1").css({"opacity":"0","visibility": "hidden",'transition':'opacity .8s ease-out'});
     setTimeout(start,800);
+    companyInTimer = setTimeout(showCompanyLateCome,300*1000);
     push();
 }
 
@@ -163,6 +164,10 @@ function start(){
     video.addEventListener("ended",videoEnd);
 
     videoEnd();*/
+}
+
+function showCompanyLateCome(){
+    $("#wattingForCompany").text("视频房间已失效或过期，请结束视频");
 }
 
 function videoEnd(){

@@ -57,6 +57,7 @@ function createVideoElement( id, isLocal, userid){
             if (json.data.role == 'company') {
                 $("#wattingForCompany").hide();
                 $("#"+id).show();
+                clearTimeout(companyInTimer);
             }else {
                 notifyQMT(1);
                 QMTtimer = window.setInterval("notifyQMT(1)",60000);

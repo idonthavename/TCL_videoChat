@@ -13,11 +13,9 @@ class IndexController extends Controller
 {
     private $tx_config;
     private $redis;
-    private $globalContent;
 
     public function __construct(){
         $this->redis = app('redis.connection');
-        $this->globalContent = "视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！";
     }
 
     public function play(){
@@ -59,8 +57,8 @@ class IndexController extends Controller
                 if (!isset($rolerData) || empty($rolerData) || $rolerData == $this->tx_config['userid']){
                     $this->redis->hset('TCL_WEBRTCROOM_'.$request->roomid,$request->role,$this->tx_config['userid']);
                 }elseif ($rolerData && $rolerData != $this->tx_config['userid']){
-                    //return response()->json(['status'=>-200,'msg'=>'亲请确定您是否在房间名单上哦']);
-                    return response()->json(['status'=>-200,'msg'=>$this->globalContent]);
+                    $msg = $this->__isWeixin($request->header('user-agent')) ? 'outOfTime' : '亲请确定您是否在房间名单上哦';
+                    return response()->json(['status'=>-200,'msg'=>$msg]);
                 }
         }
         //每次有新成员进入房间刷新redis过期时间
@@ -117,7 +115,8 @@ class IndexController extends Controller
                     return response()->json(['status'=>200,'msg'=>'退出房间成功']);
                 }
         }
-        return response()->json(['status'=>-200,'msg'=>$this->globalContent]);
+        $msg = $this->__isWeixin($request->header('user-agent')) ? 'outOfTime' : '退出房间异常';
+        return response()->json(['status'=>-200,'msg'=>$msg]);
     }
 
     //检测退出房间的人是谁，向其他用户发送消息（ajax向）
@@ -211,4 +210,13 @@ class IndexController extends Controller
         ];
         return response()->json($ret);
     }
+
+    //判断header头
+    private function __isWeixin($userAgent){
+        if ( strpos($userAgent, 'MicroMessenger') !== false ) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -320,6 +320,16 @@ Page({
   },
 
   /**
+   * 设置美颜
+   */
+  setFadeAction: function (fadeAction) {
+    this.data.fadeAction = fadeAction;
+    this.setData({
+      fadeAction: this.data.fadeAction
+    });
+  },
+
+  /**
    * 切换是否静音
    */
   changeMute: function () {
@@ -418,7 +428,7 @@ Page({
           if (self.data.anchorIsOnline == 0 && self.data.anchorIsOnline != "notAllow" && !self.data.test) {
             wx.redirectTo({
               //url: '/pages/error/error?content=坐席还未进入房间，请稍后再试'
-              url: '/pages/error/error?content=视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！'
+              url: '/pages/error/error?content=outOfTime'
             })
           }
         }, 5000);
@@ -813,21 +823,17 @@ Page({
   Countdown: function(token, timestamp) {
     console.log("fade action!");
     var self = this;
-    self.setData({
-      fadeAction: ''
-    })
+    self.setFadeAction('');
     fadeActionTimer = setTimeout(function () {
       webrtcroom.anchorIsOnline(token, timestamp,
         function (res) {
           if (res.data.anchorIsOnline == true) {
-            self.setData({
-              fadeAction: 'fadeAction'
-            })
+            self.setFadeAction('fadeAction');
           }
         }, function () {
           console.log("坐席out of line");
         })
       self.Countdown(token, timestamp);
-    }, 10000);
+    }, 30000);
   }
 })

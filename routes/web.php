@@ -35,6 +35,8 @@ Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVid
 
 Route::get('/test','HomeController@test');
 
+Route::get('/littleSecret', 'HomeController@littleSecret')->middleware('auth.basic');
+
 /*
 Route::get('/test', function (){
     $guzzle = new GuzzleHttp\Client;

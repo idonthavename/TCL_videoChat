@@ -73,6 +73,18 @@ Component({
       type: String,
       value: ''
     },
+
+    //左上角悬浮图标
+    fadeAction: {
+      type: String,
+      value: ''
+    },
+
+    //默认全后置
+    devicePosition: {
+      type: String,
+      value: 'back'
+    },
     
     frontCamera: {type: Boolean, value: true, observer: function (newVal, oldVal) { this.switchCamera(); }},  //设置前后置摄像头，true表示前置
   },

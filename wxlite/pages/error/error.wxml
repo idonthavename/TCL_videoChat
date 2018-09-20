@@ -3,7 +3,14 @@
     <view class="pic"><image src="../Resources/error.png"></image></view>
     
     <view wx:if="{{content}}" class="content one">
+      <view wx:if="{{content == 'outOfTime'}}">
+      视频房间已失效或过期
+      <text>\n</text>
+      请联系客服人员重新发起视频邀请，谢谢！
+      </view>
+      <view wx:else>
       {{content}}
+      </view>
     </view>
 
     <view wx:else class="content text-left">

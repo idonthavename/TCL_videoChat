@@ -1,7 +1,6 @@
-<image class='fadeImage {{fadeAction}}' src='../Resources/play.png' mode='aspectFit'></image>
 <view class="container-box">
 		<view class="camera-box">
-				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" frontCamera="{{frontCamera}}" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true"></webrtc-room>
+				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" fadeAction="{{fadeAction}}" devicePosition="back" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true"></webrtc-room>
 		</view>
 		<view class="operate">
 				<view class="img-box">

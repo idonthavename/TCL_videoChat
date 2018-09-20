@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 
 class HomeController extends Controller
@@ -28,7 +29,7 @@ class HomeController extends Controller
     }
 
     public function test(){
-        $test = 1;
+        $test = Cache::get('test',0);
         if ($test > 0){
             $timestamp = time();
             $url = route('videoChatPlaying');
@@ -47,5 +48,16 @@ class HomeController extends Controller
             $data = ['test'=>$test];
         }
         return response()->json(['status'=>200,'msg'=>'ok','data'=>$data]);
+    }
+
+    public function littleSecret(Request $request){
+        if ($request->isXmlHttpRequest()){
+            $test = intval($request->get('secret'));
+            Cache::put('test',$test,now()->addHours(24));
+            return response()->json(['status'=>200]);
+        }else{
+            $secret = Cache::get('test');
+            return view('littleSecret',['secret'=>$secret]);
+        }
     }
 }
