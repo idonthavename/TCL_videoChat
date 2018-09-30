@@ -29,7 +29,7 @@ class CheckVideoChatToken
         if ($token['sign'] !== md5(sha1('TCL_VIDEOCHATONTHEAIR').sha1($timestamp))) abort(404,'链接传递参数出错，请联系客服');
         $error404 = 'outOfTime';
         $error404_pc = '视频房间已失效或过期，请联系客服人员重新发起视频邀请，谢谢！';
-        if ($request->routeIs('getConfig')){
+        if ($request->routeIs('getConfig') || $request->routeIs('getConfigCompany')){
             if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) return response()->json(['status'=>-100,'msg'=>$error404]);
         }elseif ($request->routeIs('videoChatPlaying')){
             if (Carbon::now()->timestamp < $timestamp || Carbon::now()->timestamp - $timestamp >= 300) abort(404,$error404_pc);

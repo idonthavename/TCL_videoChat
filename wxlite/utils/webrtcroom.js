@@ -37,7 +37,7 @@ var webrtcroom = {
             errCode: res.data.status,
             errMsg: res.data.msg
           })
-          wx.redirectTo({
+          wx.reLaunch({
             url: '/pages/error/error?content=' + (res.data.msg ? res.data.msg : '服务器请求失败')
           })
           return;
@@ -225,6 +225,22 @@ var webrtcroom = {
     var self = this;
     self.request({
       url: config.tclServiceUrl + '/anchorIsOnline',
+      data: {
+        token: token,
+        timestamp: timestamp,
+        noNeedDomain: 1
+      },
+      success: function (res) {
+        success && success(res.data);
+      },
+      fail: fail
+    })
+  },
+
+  confForCompany: function (token, timestamp, success, fail) {
+    var self = this;
+    self.request({
+      url: config.tclServiceUrl + '/confForCompany',
       data: {
         token: token,
         timestamp: timestamp,

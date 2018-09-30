@@ -17,9 +17,11 @@
             </view>
         </view>
 
+        <!-- device-position="{{devicePosition}}" -->
+        
         <view class="player-box" style="width: 100vw;height: 145vw;">
             <view class="pusher-item player-item" style="height: 88vh;margin-top: 0vh;">
-                <live-pusher wx:if="{{pushURL}}" id="rtcpusher" autopush mode="RTC" url="{{pushURL}}" aspect="{{aspect}}" min-bitrate="{{minBitrate}}" max-bitrate="{{maxBitrate}}" audio-quality="high" beauty="{{beauty}}" device-position="{{devicePosition}}" muted="{{muted}}" waiting-image="https://mc.qcloudimg.com/static/img/daeed8616ac5df256c0591c22a65c4d3/pause_publish.jpg" background-mute="{{true}}" debug="{{debug}}" bindstatechange="onPush" binderror="onError">
+                <live-pusher wx:if="{{pushURL}}" id="rtcpusher" autopush mode="RTC" url="{{pushURL}}" aspect="{{aspect}}" min-bitrate="{{minBitrate}}" max-bitrate="{{maxBitrate}}" audio-quality="high" beauty="{{beauty}}" muted="{{muted}}" device-position="{{devicePosition}}" waiting-image="https://mc.qcloudimg.com/static/img/daeed8616ac5df256c0591c22a65c4d3/pause_publish.jpg" background-mute="{{true}}" debug="{{debug}}" bindstatechange="onPush" binderror="onError">
                      <!-- <cover-image class="character" src="/pages/Resources/mask.png"></cover-image>  -->
                      <cover-image class='fadeImage {{fadeAction}}' src='/pages/Resources/start.png' mode='aspectFit'></cover-image>
                     <cover-view class="character" style="padding: 0 5px;">我</cover-view>

@@ -1,4 +1,6 @@
 // pages/main/main.js
+var config = require('../../config.js')
+var webrtcroom = require('../../utils/webrtcroom.js')
 Page({
 
   /**
@@ -60,18 +62,25 @@ Page({
             if (res.authSetting['scope.userInfo']) {
               wx.getUserInfo({
                 success: function (res) {
-                  console.log(res.userInfo)
                   //用户已经授权过
-                  wx.navigateTo({
-                    url: '/pages/videochat/videochat?token=' + self.data.token + '&timestamp=' + self.data.timestamp
-                  })
+                  console.log(res.userInfo)
+
+                  //检测房间是否合法、过期等
+                  webrtcroom.confForCompany(self.data.token, self.data.timestamp,
+                    function (res) {
+                      wx.navigateTo({
+                        url: '/pages/videochat/videochat?token=' + self.data.token + '&timestamp=' + self.data.timestamp
+                      })
+                    }, function () {
+                      console.log("房间检测失败");
+                    })
                 }
               })
             }
           }
         })
       } else {
-        wx.redirectTo({
+        wx.reLaunch({
           url: '/pages/error/error'
         })
       }

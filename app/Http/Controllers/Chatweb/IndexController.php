@@ -211,6 +211,24 @@ class IndexController extends Controller
         return response()->json($ret);
     }
 
+    //专供给客户小程序进入房间前判断合法
+    public function confForCompany(Request $request){
+        if ($request->role == 'company') {
+            //配置项
+            $this->tx_config = ['userid' => md5($request->session()->getId() . env('VIDEOCHAT_USER_SALT'))];
+
+            $anchorIsOnline = false;
+            $anchorIsOnline = $this->redis->hexists('TCL_WEBRTCROOM_' . $request->roomid, 'anchor');
+            if (!$anchorIsOnline) return response()->json(['status' => -250, 'msg' => 'outOfTime']);
+
+            //redis判断角色权限，并限制入场人数
+            $rolerData = $this->redis->hget('TCL_WEBRTCROOM_' . $request->roomid, $request->role);
+            if ($rolerData && $rolerData != $this->tx_config['userid']) return response()->json(['status' => -200, 'msg' => 'outOfTime']);
+        }
+        $ret = ['status'=>200, 'msg'=>'Success'];
+        return response()->json($ret);
+    }
+
     //判断header头
     private function __isWeixin($userAgent){
         if ( strpos($userAgent, 'MicroMessenger') !== false ) {

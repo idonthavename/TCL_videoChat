@@ -26,6 +26,7 @@ Route::group(['prefix'=>'qiniu','middleware'=>'crossHttp'],function (){
 Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVideoChatToken'],function (){
     Route::get('/','IndexController@play')->name('videoChatPlaying');
     Route::post('/conf','IndexController@conf')->name('getConfig');
+    Route::post('/confForCompany','IndexController@confForCompany')->name('getConfigCompany');
     Route::post('/quitRoom','IndexController@quitRoom');
     Route::post('/checkQuitUserForRole','IndexController@checkQuitUserForRole');
     Route::post('/onlineWhoRoleIs','IndexController@onlineWhoRoleIs');
