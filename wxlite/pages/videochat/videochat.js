@@ -24,6 +24,9 @@ Page({
     beauty: 5,
     muted: false,
     debug: false,
+    hd:false,
+    minBitrate: 600,
+    maxBitrate:800,
     frontCamera: true,
     fadeAction: '',
     role: ROLE_TYPE.AUDIENCE, // presenter 代表主播，audience 代表观众
@@ -346,6 +349,25 @@ Page({
     this.data.debug = !this.data.debug;
     this.setData({
       debug: this.data.debug
+    });
+  },
+
+  /**
+   * 切换码率
+   */
+  changeBitrate: function () {
+    this.data.hd = !this.data.hd;
+    if(this.data.hd == true){
+      this.data.minBitrate = 1200
+      this.data.maxBitrate = 1600
+    }else{
+      this.data.minBitrate = 600
+      this.data.maxBitrate = 800
+    }
+    this.setData({
+      hd: this.data.hd,
+      minBitrate: this.data.minBitrate,
+      maxBitrate: this.data.maxBitrate
     });
   },
 

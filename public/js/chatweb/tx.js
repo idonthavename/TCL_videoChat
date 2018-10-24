@@ -257,6 +257,14 @@ function startRTC(){
     });
 }
 
+function muted(yes){
+    if (yes){
+        RTC.closeAudio();
+    }else{
+        RTC.openAudio();
+    }
+}
+
 Bom = {
     /**
      * @description 读取location.search

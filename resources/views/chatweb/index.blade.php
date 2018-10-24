@@ -88,7 +88,7 @@
         <!--        </video>-->
         <!--<div class="zaodian abs"></div>-->
         <img class="stopVid abs" src="images/chatweb/stopVid.png" />
-        <img class="playVid abs" src="images/chatweb/p1_bar.png"/>
+        <img class="playVid abs" src="images/chatweb/muted.png"/>
     </div>
 
     <!--page3-->
@@ -96,6 +96,7 @@
         <div class="abs p1_pic01">
             <div style="font-size: 2rem; margin-top: 22.3%;">已结束通话....</div>
             <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;"/>
+            <img class="playVid on" src="images/chatweb/muted.png" style="opacity: 0.4;position: absolute;"/>
         </div>
     </div>
 </div>

@@ -64,13 +64,15 @@ function resetCache(){
 
 var video = document.getElementById("mid");
 //$(".stopVid").addClass("on");
-$(".playVid").removeClass("on");
+//$(".playVid").removeClass("on");
 
 $(".vid").on('click',function () {
     if ($(".stopVid").hasClass("fadeIn")){
         $(".stopVid").removeClass("fadeIn").fadeOut();
+        $(".playVid").removeClass("fadeIn").fadeOut();
     }else{
         $(".stopVid").addClass("fadeIn").fadeIn();
+        $(".playVid").addClass("fadeIn").fadeIn();
     }
 });
 
@@ -136,10 +138,16 @@ $(".stopVid").on("click",pauseVid);
 $(".playVid").on("click",goonVid);
 
 function goonVid(){
-    $(".playVid").removeClass("on");
-    $(".stopVid").addClass("on");
-    /*video.currentTime = _currentTime;
-    video.play();*/
+    if ($(".playVid").hasClass("muted")){
+        $(".playVid").removeClass("muted");
+        $(".playVid").attr("src","images/chatweb/muted.png");
+        muted(false);
+    }else{
+        $(".playVid").addClass("muted");
+        $(".playVid").attr("src","images/chatweb/muteding.png");
+        muted(true);
+    }
+    return false;
 }
 function pauseVid(){
     //$(".stopVid").removeClass("on");

@@ -1,6 +1,6 @@
 <view class="container-box">
 		<view class="camera-box">
-				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" fadeAction="{{fadeAction}}" devicePosition="back" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true"></webrtc-room>
+				<webrtc-room id="webrtcroom" template="1man" roomID="{{roomID}}" userID="{{userID}}" roomCreator="{{roomCreator}}" userSig="{{userSig}}" sdkAppID="{{sdkAppID}}" accountType="{{accountType}}" privateMapKey="{{privateMapKey}}" fadeAction="{{fadeAction}}" devicePosition="back" beauty="{{beauty}}" muted="{{muted}}" debug="{{debug}}" bindRoomEvent="onRoomEvent" bindIMEvent="onIMEvent" enableIM="true" minBitrate="{{minBitrate}}" maxBitrate="{{maxBitrate}}"></webrtc-room>
 		</view>
 		<view class="operate">
 				<view class="img-box">
@@ -14,6 +14,10 @@
 				<view class="img-box">
 						<image src="../Resources/{{muted ? 'mic-dis' : 'mic'}}.png" bindtap="changeMute"></image>
 						<text>声音</text>
+				</view>
+        <view class="img-box">
+						<image src="../Resources/{{hd? 'HD' : 'SD'}}.png" bindtap="changeBitrate"></image>
+						<text>{{hd? '高清' : '普清'}}</text>
 				</view>
         <!--         
 				<view class="img-box">
