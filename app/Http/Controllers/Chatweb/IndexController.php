@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\WebRTCSigApi;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class IndexController extends Controller
@@ -175,14 +176,14 @@ class IndexController extends Controller
         $roomid = $request->roomid;
         if (is_numeric($status) && $status > 0){
             $client = new Client();
-            $sendData = ['query'=>['userId'=>$request->third_id,'chatId'=>$request->roomid,'status'=>$status]];
-            if (env('DEBUG')){
-                $returnQMT = $client->request('GET','http://10.4.62.41:8080/weChatAdapter/videochat/keepStatus',$sendData);
+            $sendData = ['form_params' => ['userId'=>$request->third_id,'chatId'=>$request->roomid,'status'=>$status]];
+            if (env('APP_DEBUG')){
+                $returnQMT = $client->request('POST','http://10.4.62.41:8080/weChatAdapter/videochat/keepStatus',$sendData);
             }else{
-
-                $returnQMT = $client->request('GET','http://10.4.28.68:8081/weChatAdapter/videochat/keepStatus',$sendData);
+                $returnQMT = $client->request('POST','http://10.4.28.68:8081/weChatAdapter/videochat/keepStatus',$sendData);
             }
             $body = json_decode($returnQMT->getBody(),true);
+            Log::info($body);
             if ($returnQMT->getStatusCode() === 200 && $body['success'] === true){
                 return response()->json(['status'=>200,'msg'=>'心跳检测正常']);
             }else{
