@@ -25,8 +25,8 @@ Page({
     muted: false,
     debug: false,
     hd:false,
-    minBitrate: 600,
-    maxBitrate:800,
+    minBitrate: 800,
+    maxBitrate:1000,
     frontCamera: true,
     fadeAction: '',
     role: ROLE_TYPE.AUDIENCE, // presenter 代表主播，audience 代表观众

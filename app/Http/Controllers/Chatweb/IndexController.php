@@ -110,7 +110,9 @@ class IndexController extends Controller
                 }
                 break;
             default:
-                if ($rolerData == $userid){
+                if (!isset($rolerData) || empty($rolerData)){
+                    return response()->json(['status'=>200,'msg'=>'退出房间成功']);
+                }elseif ($rolerData == $userid){
                     $this->redis->hdel('TCL_WEBRTCROOM_'.$request->roomid,$request->role);
                     $this->redis->setex('TCL_WEBRTCROOM_'.$request->roomid.'_'.$userid,60,$request->role);
                     return response()->json(['status'=>200,'msg'=>'退出房间成功']);
