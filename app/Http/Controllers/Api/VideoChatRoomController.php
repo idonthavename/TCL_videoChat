@@ -19,9 +19,9 @@ class VideoChatRoomController extends Controller
         ];
     }
 
-    public function roomAddress($role = '',$roomid = '',$third_id = 0){
+    public function roomAddress($role = '',$roomid = '',$third_id = ""){
         $role = strip_tags($role);
-        $roomid = intval($roomid);
+        $roomid = strip_tags(trim((string)$roomid));
         $third_id = intval($third_id);
         $roleAllow = ['anchor','supporter','company'];
         if (!in_array($role,$roleAllow) || !$role) return response()->json($this->content);

@@ -21,7 +21,7 @@ class CheckVideoChatToken
         $timestamp = $request->input('timestamp',0);
         if (!$token || !$timestamp) abort(404,'抱歉你的页面去了外太空');
         $token = Crypt::decrypt($token);
-        $token['roomid'] = intval($token['roomid']);
+        $token['roomid'] = strip_tags(trim((string)$token['roomid']));
         $token['third_id'] = intval($token['third_id']);
         $roleAllow = ['anchor','supporter','company'];
         if (!in_array($token['role'],$roleAllow)) abort(404,'抱歉，您没有权限进去该房间');

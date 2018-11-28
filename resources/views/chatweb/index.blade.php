@@ -61,6 +61,8 @@
     <button data-remodal-action="confirm" class="remodal-confirm">确定</button>
 </div>
 
+<p style="position: absolute;color: white;top: 5px;left:5px;opacity: 0.5;z-index: 2;">房间号：{{$roomid}}</p>
+
 <div class="holder">
     <img src="images/chatweb/share.png" style="position: absolute; top: 0;left: 0;opacity: 0;">
 

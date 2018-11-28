@@ -19,8 +19,8 @@ class IndexController extends Controller
         $this->redis = app('redis.connection');
     }
 
-    public function play(){
-        return view('chatweb.index');
+    public function play(Request $request){
+        return view('chatweb.index',['roomid'=>$request->roomid]);
     }
 
     public function conf(Request $request){
@@ -174,8 +174,6 @@ class IndexController extends Controller
 
     public function notifyQMT(Request $request){
         $status = intval($request->input('status',0));
-        $third_id = $request->third_id;
-        $roomid = $request->roomid;
         if (is_numeric($status) && $status > 0){
             $client = new Client();
             $sendData = ['form_params' => ['userId'=>$request->third_id,'chatId'=>$request->roomid,'status'=>$status]];
