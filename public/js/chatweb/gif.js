@@ -3,7 +3,10 @@ var canvas, stage, exportRoot;
 function init() {
 	var isiOS = SystemUtil. getPlatform().platform == 'iphone';
 	var isWeiXin = SystemUtil.getBrower().browser == "micromessenger";
-	if (isiOS && isWeiXin) document.getElementById("mask_content").style.display="inline";
+	if (isiOS && isWeiXin) {
+		goingPlay = 0;
+		document.getElementById("mask_content").style.display="inline";
+	}
 	canvas = document.getElementById("canvas");
 	exportRoot = new lib.gif();
 

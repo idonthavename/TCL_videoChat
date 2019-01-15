@@ -21,6 +21,7 @@ navigator.getUserMedia ||
 (navigator.getUserMedia = navigator.mozGetUserMedia ||  navigator.webkitGetUserMedia || navigator.msGetUserMedia);
 
 if (!navigator.getUserMedia) {
+    goingPlay = 0;
     $('#modal2Desc').text("抱歉，您的浏览器不支持WebRTC，请使用谷歌(推荐)、QQ浏览器、Safari(11.1.2以上)");
     $('[data-remodal-id=modal2]').remodal({
         modifier: 'with-red-theme',
@@ -58,9 +59,16 @@ function createVideoElement( id, isLocal, userid){
                 $("#wattingForCompany").hide();
                 $("#"+id).show();
                 clearTimeout(companyInTimer);
-            }else {
-                notifyQMT(1);
-                QMTtimer = window.setInterval("notifyQMT(1)",60000);
+            }
+            if (isLocal){
+                H5role = json.data.role;
+                if (H5role == 'company'){
+                    notifyCompanyQMT(1);
+                    QMTtimer = window.setInterval("notifyCompanyQMT(1)", 60000);
+                }else{
+                    notifyQMT(1);
+                    QMTtimer = window.setInterval("notifyQMT(1)",60000);
+                }
             }
         }else {
             console.error(json.msg);
@@ -95,12 +103,14 @@ function onLocalStreamAdd(info) {
         // 例如 ：[device,device,device]
         // 这些device将在选择摄像头的时候使用
         console.log(devices);
+        videoDevices = devices;
+
         //后置镜头
         //前置相机
         //FaceTime 高清摄像头
-        /*$.each(devices,function (key,val) {
-            console.log(val.label);
-        })*/
+        //$.each(devices,function (key,val) {
+        //    console.log(val.label);
+        //})
     });
 }
 
@@ -265,6 +275,10 @@ function muted(yes){
     }
 }
 
+function chooseVideo(device){
+    RTC.chooseVideoDevice(device);
+}
+
 Bom = {
     /**
      * @description 读取location.search
@@ -404,7 +418,11 @@ function GetQueryString(name) {
 
 function checkLeave(){
     window.clearTimeout(QMTtimer);
-    notifyQMT(2);
+    if (H5role == 'company'){
+        notifyCompanyQMT(2);
+    }else{
+        notifyQMT(2);
+    }
     $.ajax({
         type: "POST",
         url: quitRoomCgi,
@@ -474,6 +492,26 @@ function notifyQMT(type){
     $.ajax({
         type: "POST",
         url: notifyQMTCgi,
+        dataType: 'json',
+        headers: {'X-CSRF-TOKEN': csrf},
+        data:{
+            token: GetQueryString('token'),
+            timestamp: GetQueryString('timestamp'),
+            status: type,
+        },
+        success: function (res) {
+            console.log(res.msg);
+        },
+        error: function (error) {
+            console.debug('心跳失败：'+error);
+        }
+    });
+}
+
+function notifyCompanyQMT(type){
+    $.ajax({
+        type: "POST",
+        url: notifyCompanyQMTCgi,
         dataType: 'json',
         headers: {'X-CSRF-TOKEN': csrf},
         data:{

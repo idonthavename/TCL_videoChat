@@ -14,10 +14,15 @@
         var quitRoomCgi = "{{url('/chatweb/quitRoom')}}";
         var onlineWhoRoleIsCgi = "{{url('/chatweb/onlineWhoRoleIs')}}";
         var notifyQMTCgi = "{{url('/chatweb/notifyQMT')}}";
+        var notifyCompanyQMTCgi = "{{url('/chatweb/littleProgramQMT')}}";
         var localGlobal = "";
         var roomGlobal = 0;
         var QMTtimer = '';
         var companyInTimer = '';
+        var goingPlay = 1;
+        var H5role = 'anchor';
+        var videoDevices = [];
+        var videoSelect = 0;
         if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
             var version = parseFloat(RegExp.$1);
             if (version > 2.3) {
@@ -89,6 +94,7 @@
         <!--               webkit-playsinline="true">-->
         <!--        </video>-->
         <!--<div class="zaodian abs"></div>-->
+        <img class="videoSelectVid abs" src="images/chatweb/camera.png"/>
         <img class="stopVid abs" src="images/chatweb/stopVid.png" />
         <img class="playVid abs" src="images/chatweb/muted.png"/>
     </div>
@@ -97,6 +103,7 @@
     <div class="page2 abs">
         <div class="abs p1_pic01">
             <div style="font-size: 2rem; margin-top: 22.3%;">已结束通话....</div>
+            <img class="videoSelectVid on" src="images/chatweb/camera.png" style="opacity: 0.4;position: absolute;"/>
             <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;"/>
             <img class="playVid on" src="images/chatweb/muted.png" style="opacity: 0.4;position: absolute;"/>
         </div>

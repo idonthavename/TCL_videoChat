@@ -31,6 +31,7 @@ Route::group(['prefix'=>'chatweb','namespace'=>'Chatweb','middleware'=>'checkVid
     Route::post('/checkQuitUserForRole','IndexController@checkQuitUserForRole');
     Route::post('/onlineWhoRoleIs','IndexController@onlineWhoRoleIs');
     Route::post('/notifyQMT','IndexController@notifyQMT');
+    Route::post('/littleProgramQMT','IndexController@littleProgramQMT');
     Route::post('/anchorIsOnline','IndexController@anchorIsOnline');
 });
 

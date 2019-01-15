@@ -185,9 +185,36 @@ class IndexController extends Controller
             $body = json_decode($returnQMT->getBody(),true);
             Log::info($body);
             if ($returnQMT->getStatusCode() === 200 && $body['success'] === true){
-                return response()->json(['status'=>200,'msg'=>'心跳检测正常']);
+                return response()->json(['status'=>200,'msg'=>($status == 2 ? '退出' : '连接').'心跳检测正常']);
             }else{
                 return response()->json(['status'=>-200,'msg'=>'QMT请求异常']);
+            }
+        }else{
+            return response()->json(['status'=>-200,'msg'=>'参数异常']);
+        }
+    }
+
+    public function littleProgramQMT(Request $request){
+        $status = intval($request->input('status',0));
+        if (is_numeric($status) && $status > 0){
+            $client = new Client();
+            $sendData = ['form_params' => ['chatId'=>$request->roomid,'status'=>$status]];
+            if (env('APP_DEBUG')){
+                $returnQMT = $client->request('POST','http://10.4.62.41:8080/weChatAdapter/videochat/keepUserStatus',$sendData);
+            }else{
+                $returnQMT = $client->request('POST','http://10.4.28.68:8081/weChatAdapter/videochat/keepUserStatus',$sendData);
+            }
+            $body = json_decode($returnQMT->getBody(),true);
+            Log::info($body);
+            if ($returnQMT->getStatusCode() === 200 && $body['success'] === true){
+                return response()->json([
+                    'status'=>200,
+                    'msg'=>($status == 2 ? '退出' : '连接').'QMT用户心跳检测正常',
+                    'isover'=>isset($body['isover']) && $body['isover'] ? true : false,
+                    'test'=>env('APP_DEBUG')
+                    ]);
+            }else{
+                return response()->json(['status'=>$this->__isWeixin($request->header('user-agent')) ? 200 : -200,'msg'=>'QMT用户检测请求异常']);
             }
         }else{
             return response()->json(['status'=>-200,'msg'=>'参数异常']);

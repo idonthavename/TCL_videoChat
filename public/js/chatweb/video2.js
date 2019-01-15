@@ -68,9 +68,11 @@ var video = document.getElementById("mid");
 
 $(".vid").on('click',function () {
     if ($(".stopVid").hasClass("fadeIn")){
+        $(".videoSelectVid").removeClass("fadeIn").fadeOut();
         $(".stopVid").removeClass("fadeIn").fadeOut();
         $(".playVid").removeClass("fadeIn").fadeOut();
     }else{
+        $(".videoSelectVid").addClass("fadeIn").fadeIn();
         $(".stopVid").addClass("fadeIn").fadeIn();
         $(".playVid").addClass("fadeIn").fadeIn();
     }
@@ -136,6 +138,7 @@ function hiddenPage1(){
 //视频暂停
 $(".stopVid").on("click",pauseVid);
 $(".playVid").on("click",goonVid);
+$(".videoSelectVid").on("click",videoSelectVid);
 
 function goonVid(){
     if ($(".playVid").hasClass("muted")){
@@ -161,6 +164,12 @@ function pauseVid(){
     }
     return false;
     // videoEnd();
+}
+function videoSelectVid(){
+    videoSelect++;
+    if (videoSelect >= videoDevices.length) videoSelect = 0;
+    console.log(videoDevices[videoSelect]);
+    chooseVideo(videoDevices[videoSelect]);
 }
 
 function start(){
@@ -285,5 +294,7 @@ var _dragDistance = drag[0];
 _dragDistance.enable();
 
 $(document).ready(function () {
-    hiddenPage1();
+    if (goingPlay == 1) {
+        hiddenPage1();
+    }
 });
