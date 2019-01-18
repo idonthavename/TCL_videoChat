@@ -20,7 +20,7 @@ class IndexController extends Controller
     }
 
     public function play(Request $request){
-        return view('chatweb.index',['roomid'=>$request->roomid]);
+        return view('chatweb.index',['roomid'=>$request->roomid,'role'=>$request->role]);
     }
 
     public function conf(Request $request){

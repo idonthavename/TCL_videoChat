@@ -7,6 +7,7 @@ var webrtcroom = {
   heartBeatReq: null,
   requestSeq: 0, // 请求id
   requestTask: [], // 请求task
+  qmtInterval: 0,
 
   /**
    * [request 封装request请求]
@@ -234,6 +235,36 @@ var webrtcroom = {
         success && success(res.data);
       },
       fail: fail
+    })
+  },
+
+  qmtInAndOutRequest: function (token, timestamp, status) {
+    var self = this;
+    status = !status ? 1 : status
+    self.request({
+      url: config.tclServiceUrl + '/littleProgramQMT',
+      data: {
+        token: token,
+        timestamp: timestamp,
+        noNeedDomain: 1,
+        status: status
+      },
+      success: function(res){
+        console.log(res.data.msg)
+        if (res.data.isover == true && res.data.test == false){
+          clearInterval(self.qmtInterval)
+          wx.showModal({
+            title: '提示',
+            content: '坐席已离开房间',
+            showCancel: false,
+            complete: function () {
+              wx.redirectTo({
+                url: '/pages/error/error'
+              })
+            }
+          })
+        }
+      }
     })
   },
 

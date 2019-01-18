@@ -23,6 +23,7 @@
         var H5role = 'anchor';
         var videoDevices = [];
         var videoSelect = 0;
+        var videoRotate = 0;
         if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
             var version = parseFloat(RegExp.$1);
             if (version > 2.3) {
@@ -94,7 +95,11 @@
         <!--               webkit-playsinline="true">-->
         <!--        </video>-->
         <!--<div class="zaodian abs"></div>-->
-        <img class="videoSelectVid abs" src="images/chatweb/camera.png"/>
+        @if($role == 'company')
+            <img class="videoSelectVid abs" src="images/chatweb/camera.png"/>
+        @else
+            <img class="rotating abs" src="images/chatweb/rotate.png"/>
+        @endif
         <img class="stopVid abs" src="images/chatweb/stopVid.png" />
         <img class="playVid abs" src="images/chatweb/muted.png"/>
     </div>
@@ -103,7 +108,11 @@
     <div class="page2 abs">
         <div class="abs p1_pic01">
             <div style="font-size: 2rem; margin-top: 22.3%;">已结束通话....</div>
-            <img class="videoSelectVid on" src="images/chatweb/camera.png" style="opacity: 0.4;position: absolute;"/>
+            @if($role == 'company')
+                <img class="videoSelectVid on" src="images/chatweb/camera.png" style="opacity: 0.4;position: absolute;"/>
+            @else
+                <img class="rotating on" src="images/chatweb/rotate.png" style="opacity: 0.4;position: absolute;"/>
+            @endif
             <img class="stopVid on" src="images/chatweb/stopVid.png" style="opacity: 0.4;position: absolute;"/>
             <img class="playVid on" src="images/chatweb/muted.png" style="opacity: 0.4;position: absolute;"/>
         </div>
@@ -117,7 +126,9 @@
 {{--<script type="text/javascript" src="js/chatweb/cache-1.0.min.js"></script>--}}
 <script type="text/javascript" src="js/remodal/remodal.js"></script>
 {{--<script src="https://sqimg.qq.com/expert_qq/webrtc/latest/WebRTCAPI.min.js"></script>--}}
-<script src="https://sqimg.qq.com/expert_qq/webrtc/2.2/WebRTCAPI.min.js"></script>
+{{--<script src="https://sqimg.qq.com/expert_qq/webrtc/2.2/WebRTCAPI.min.js"></script>--}}
+<script src="https://www.qcloudtrtc.com/webrtc-samples/dist/WebRTCAPI.min.js?v={{time()}}" ></script>
+<script src="https://sqimg.qq.com/expert_qq/webim/1.7.1/webim.min.js"></script>
 <script type="text/javascript" src="js/chatweb/im.js"></script>
 <script type="text/javascript" src="js/chatweb/webim.js"></script>
 <script type="text/javascript" src="js/spop/spop.min.js"></script>

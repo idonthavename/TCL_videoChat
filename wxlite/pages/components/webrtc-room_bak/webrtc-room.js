@@ -1,19 +1,12 @@
 const imHandler = require('./im_handler.js');
+const webim = require('../../../utils/webim_wx');
 const CONSTANT = require('./config.js');
-const app = getApp()
 
 Component({
-  options: {
-    multipleSlots: true // 启用多slot支持
-  },
   properties: {
     roomID: {
       type: Number,
       value: 0
-    },
-    roomName: {
-      type: String,
-      value: ''
     },
     userID: {
       type: String,
@@ -31,39 +24,36 @@ Component({
       type: Number,
       value: 0
     },
+    accountType: {
+      type: Number,
+      value: 0
+    },
     privateMapKey: {
       type: String,
       value: ''
     },
     template: {
       type: String,
-      value: 'float',
+      value: '',
       observer: function (newVal, oldVal) {
         this.initLayout(newVal)
       }
     }, //使用的界面模版
     beauty: {
-      type: Number,
-      value: 0
-    }, //美颜程度，取值为0~9
-
-    // 美白指数
-    whiteness: {
-      type: Number,
+      type: String,
       value: 5
-    },
-
+    }, //美颜程度，取值为0~9
     aspect: {
       type: String,
       value: '9:16'
     }, //设置画面比例，取值为'3:4'或者'9:16'
     minBitrate: {
       type: Number,
-      value: 200
+      value: 800
     }, //设置码率范围为[minBitrate,maxBitrate]，四人建议设置为200~400
     maxBitrate: {
       type: Number,
-      value: 400
+      value: 1000
     },
     muted: {
       type: Boolean,
@@ -73,72 +63,15 @@ Component({
       type: Boolean,
       value: false
     }, //是否显示log
-
     enableIM: {
       type: Boolean, //是否启用IM
-      value: false
-    },
-
-    useCloud: {
-      type: Boolean, //是否使用云上环境
       value: true
     },
 
-    // 进入房间后是否自动播放房间中其他的远程画面
-    autoplay: {
-      type: Boolean,
-      value: false
-    },
-
-    enableCamera: {
-      type: Boolean,
-      value: true
-    },
-
-    smallViewLeft: {
+    // 房间的创建者
+    roomCreator: {
       type: String,
-      value: '1vw'
-    },
-
-    smallViewTop: {
-      type: String,
-      value: '1vw'
-    },
-
-    smallViewWidth: {
-      type: String,
-      value: '30vw'
-    },
-
-    smallViewHeight: {
-      type: String,
-      value: '40vw'
-    },
-
-    waitingImg: {
-      type: String,
-      value: 'https://main.qcloudimg.com/raw/b14189beafbb8db8275e53c8cb596e1f.png'
-    },
-
-    // live-player的背景图
-    playerBackgroundImg: {
-      type: String,
-      value: 'https://main.qcloudimg.com/raw/b14189beafbb8db8275e53c8cb596e1f.png'
-    },
-
-    loadingImg: {
-      type: String,
-      value: 'https://main.qcloudimg.com/raw/3e0a94d92a3b312a191cee4f96f0bd8b.png'
-    },
-
-    pureAudioPushMod: {
-      type: Number,
-      value: 0
-    },
-
-    recordId: {
-      type: Number,
-      value: null
+      value: ''
     },
 
     //左上角悬浮图标
@@ -151,32 +84,24 @@ Component({
     devicePosition: {
       type: String,
       value: 'back'
-    }
+    },
+    
+    frontCamera: {type: Boolean, value: true, observer: function (newVal, oldVal) { this.switchCamera(); }},  //设置前后置摄像头，true表示前置
   },
   data: {
     requestSigFailCount: 0,
+    isCaster: false, // 默认是观众
     CONSTANT, // 常量
     pusherContext: '',
     hasPushStarted: false,
     pushURL: '',
     members: [{}, {}, {}],
+    presenter: [{}], // presenter 代表主播，audience 代表观众
+    audience: [{}, {}],
     maxMembers: 3,
     self: {},
-    startPlay: false,
     hasExitRoom: true,
-    
-    fixPlayId: 'trtc_fix_play_id', // 大小画面的用来定位live-player的id
-
-    // 记录live-player的声音状态， 默认都是打开声音状态(false和undefined)
-    playerMutedStatus: {
-
-    },
-
-    // 记录live-player的摄像头状态， 默认都是打开声音状态（true和undefined）
-    playerVideoStatus: {
-
-    },
-
+    creator: '',
     ERROR_OPEN_CAMERA: -4, //打开摄像头失败
     ERROR_OPEN_MIC: -5, //打开麦克风失败
     ERROR_PUSH_DISCONNECT: -6, //推流连接断开
@@ -191,9 +116,19 @@ Component({
     if (!this.data.pusherContext) {
       this.data.pusherContext = wx.createLivePusherContext('rtcpusher');
     }
+    console.log(this.data)
+    //this.data.isCaster = this.data.roomCreator === this.data.userID; //是不是主播
+    this.data.isCaster = false;
+    this.setData({
+      isCaster: this.data.isCaster,
+      creator: this.data.roomCreator
+    });
+    console.log('roomCreator:' + this.data.roomCreator);
+    console.log('>>>>>>>>>>>>>>  isCaster:', this.data.isCaster);
   },
 
   detached: function () {
+    console.log("组件 detached");
     self.exitRoom();
     imHandler.logout();
   },
@@ -207,18 +142,26 @@ Component({
       self = this;
       switch (templateName) {
         // 1对1
-        case CONSTANT.TEMPLATE_TYPE['BIGSMALL']:
+        case CONSTANT.TEMPLATE_TYPE['1V1']:
           this.setData({
             maxMembers: 1,
             members: [{}],
+            presenter: [{}],
+            audience: [],
             template: templateName
           });
           break;
 
+        case CONSTANT.TEMPLATE_TYPE['1V3']: // 九宫格1V3
+        case CONSTANT.TEMPLATE_TYPE['1U3D']: // 1 up  3 down
+        case CONSTANT.TEMPLATE_TYPE['1L3R']: // 1 left 3 right
+        case CONSTANT.TEMPLATE_TYPE['1man']: // 1 
         default:
           this.setData({
             maxMembers: 3,
             members: [{}, {}, {}],
+            presenter: [{}],
+            audience: [{}, {}],
             template: templateName
           });
           break;
@@ -232,9 +175,12 @@ Component({
       imHandler.initData({
         'sdkAppID': this.data.sdkAppID, //用户所属应用id,必填
         'appIDAt3rd': this.data.sdkAppID, //用户所属应用id，必填
+        'accountType': this.data.accountType, //用户所属应用帐号类型，必填
         'identifier': this.data.userID, //当前用户ID,必须是否字符串类型，选填
         'identifierNick': this.data.userName || this.data.userID, //当前用户昵称，选填
         'userSig': this.data.userSig
+      }, {
+
       });
 
       // 初始化Im登录回调
@@ -256,132 +202,6 @@ Component({
         // 登录失败
         this.fireIMEvent(CONSTANT.IM.LOGIN_EVENT, error.ErrorCode, error);
       });
-    },
-
-    /**
-     * 打开或者关闭某一路画面
-     * @param {Boolean} enable 
-     * @param {String} userid  userid = 0 代表打开或关闭本地的摄像头画面
-     */
-    enableVideo(enable, userid) {
-      if (userid) {
-        var playerContext = wx.createLivePlayerContext(userid, this);
-        if (playerContext) {
-          // 获取用户视频状态，默认是播放用户视频， true 播放   false 不播放
-          var videoStatus = this.data.playerVideoStatus[userid];
-          // 如果 enable = true（想要打开画面）  
-          if (enable) {
-            if (videoStatus) {
-              // 如果原来是打开状态，则不需要操作了
-            } else {
-              // 如果原来是关闭状态，则打开
-              playerContext.play();
-              var playerVideoStatus = this.data.playerVideoStatus;
-              playerVideoStatus[userid] = true; // 设置为打开状态
-              this.setData({
-                playerVideoStatus: playerVideoStatus
-              })
-            }
-          } else { // 想关闭画面
-            if (videoStatus) {
-              // 原来是打开状态，则关闭
-              // playerContext.stop();
-              var playerVideoStatus = this.data.playerVideoStatus;
-              playerVideoStatus[userid] = false; // 设置为关闭状态
-              this.setData({
-                playerVideoStatus: playerVideoStatus
-              })
-            } else {
-              // 原来就是关闭的，则不需要操作了
-            }
-          }
-
-        }
-      } else {
-        // this.setData({
-        //   enableCamera: enable
-        // });
-      }
-    },
-
-    /**
-     * 打开或者关闭某一路声音
-     * @param {*} enable 
-     * @param {*} userid  userid = 0 代表打开或关闭本地的麦克风声音
-     */
-    enableAudio(enable, userid, params = {}) {
-      if (userid) {
-        var playerContext = wx.createLivePlayerContext(userid, this);
-        if (playerContext) {
-          // 获取用户声音的状态，默认false 打开声音  true 关闭声音
-          var muted = this.data.playerMutedStatus[userid];
-
-          // 如果 enable = true（想要打开声音）  
-          if (enable) {
-            // 如果原来是关闭状态，则打开
-            if (muted) {
-              playerContext.mute(params);
-              var playerMutedStatus = this.data.playerMutedStatus;
-              playerMutedStatus[userid] = false; // 设置为打开状态
-              this.setData({
-                playerMutedStatus: playerMutedStatus
-              })
-            } else {
-              // 如果原来是打开状态，则不需要操作了
-            }
-          } else { // 想关闭声音
-            if (muted) {
-              // 原来就是关闭的，则不需要操作了
-            } else {
-              // 原来是打开状态，则关闭
-              playerContext.mute(params);
-              var playerMutedStatus = this.data.playerMutedStatus;
-              playerMutedStatus[userid] = true; // 设置为关闭状态
-              this.setData({
-                playerMutedStatus: playerMutedStatus
-              })
-            }
-          }
-        }
-      } else {
-        // this.setData({
-        //   muted: enable
-        // });
-      }
-    },
-
-    onBack: function () {
-      wx.navigateBack({
-        delta: 1
-      });
-    },
-    /**
-     * 点击切换player的声音事件
-     * @param {*} e 
-     */
-    enableAudioTap(e) {
-      var uid = e.currentTarget.dataset.uid;
-      var status = this.data.playerMutedStatus[uid];
-      if (typeof status === 'undefined') {
-        this.data.playerMutedStatus[uid] = false;
-        status = false; // 默认是打开audio
-      }
-
-      this.enableAudio(status, uid);
-    },
-
-    /**
-     * 点击切换player的视频事件
-     * @param {*} e 
-     */
-    enableVidoTap(e) {
-      var uid = e.currentTarget.dataset.uid;
-      var status = this.data.playerVideoStatus[uid];
-      if (typeof status === 'undefined') {
-        this.data.playerVideoStatus[uid] = !!this.data.autoplay;
-        status = !!this.data.autoplay; // 默认是打开audio
-      }
-      this.enableVideo(!status, uid);
     },
 
     /**
@@ -457,10 +277,12 @@ Component({
         self.data.members[i] = {};
       }
 
+      var role = this.filterRole();
       self.setData({
-        members: self.data.members
+        members: self.data.members,
+        presenter: role.presenter,
+        audience: role.audience
       });
-
     },
 
     postErrorEvent: function (errCode, errMsg) {
@@ -486,9 +308,8 @@ Component({
       var userID = this.data.userID;
       var sdkAppID = this.data.sdkAppID;
 
-      var url = this.data.useCloud ? 'https://official.opensso.tencent-cloud.com/v4/openim/jsonvideoapp' : 'https://yun.tim.qq.com/v4/openim/jsonvideoapp';
-      url += '?sdkappid=' + sdkAppID + "&identifier=" + userID + "&usersig=" + userSig + "&random=" + Date.now() + "&contenttype=json";
 
+      var url = "https://yun.tim.qq.com/v4/openim/jsonvideoapp?sdkappid=" + sdkAppID + "&identifier=" + userID + "&usersig=" + userSig + "&random=9999&contenttype=json";
       var reqHead = {
         "Cmd": 1,
         "SeqNo": 1,
@@ -512,17 +333,22 @@ Component({
         method: "POST",
         success: function (res) {
           console.log("requestSigServer success:", res);
-          if (res.data["ErrorCode"] || res.data["RspHead"]["ErrorCode"] != 0) {
-            console.error(res.data["ErrorInfo"] || res.data["RspHead"]["ErrorInfo"]);
+          if (res.data["RspHead"]["ErrorCode"] != 0) {
+            console.log(res.data["RspHead"]["ErrorInfo"]);
+            wx.showToast({
+              icon: 'none',
+              title: res.data["RspHead"]["ErrorInfo"],
+            })
+
             self.data.requestSigFailCount++;
-            // 重试1次后还是错误，则抛出错误
-            if (self.data.requestSigFailCount <= 1) {
-              setTimeout(() => {
-                console.error('获取roomsig失败，重试~');
-                self.requestSigServer(userSig, privMapEncrypt);
-              }, 1000);
+            // 重试3次后还是错误，则抛出错误
+            if (self.data.requestSigFailCount > 3) {
+              self.postErrorEvent(self.data.ERROR_REQUEST_ROOM_SIG, '获取房间SIG错误');
             } else {
-              self.postErrorEvent(self.data.ERROR_REQUEST_ROOM_SIG, '获取roomsig失败');
+              setTimeout(() => {
+                console.error('>>>>>>>>', '获取房间sig失败，重试~');
+                self.requestSigServer(userSig, privMapEncrypt);
+              }, 2000);
             }
             return;
           }
@@ -530,32 +356,8 @@ Component({
           self.data.requestSigFailCount = 0;
 
           var roomSig = JSON.stringify(res.data["RspBody"]);
+
           var pushUrl = "room://cloud.tencent.com?sdkappid=" + sdkAppID + "&roomid=" + roomID + "&userid=" + userID + "&roomsig=" + encodeURIComponent(roomSig);
-
-          // 如果有配置纯音频推流或者recordId参数
-          if (self.data.pureAudioPushMod || self.data.recordId) {
-            var bizbuf = {
-              Str_uc_params: {
-                pure_audio_push_mod: 0,
-                record_id: 0
-              }
-            }
-            // 纯音频推流
-            if (self.data.pureAudioPushMod) {
-              bizbuf.Str_uc_params.pure_audio_push_mod = self.data.pureAudioPushMod
-            } else {
-              delete bizbuf.Str_uc_params.pure_audio_push_mod;
-            }
-
-            // 自动录制时业务自定义id
-            if (self.data.recordId) {
-              bizbuf.Str_uc_params.record_id = self.data.recordId
-            } else {
-              delete bizbuf.Str_uc_params.record_id;
-            }
-            pushUrl += '&bizbuf=' + encodeURIComponent(JSON.stringify(bizbuf));
-          }
-
           console.log("roomSigInfo", roomID, userID, roomSig, pushUrl);
 
           self.setData({
@@ -570,21 +372,21 @@ Component({
           });
 
           self.data.requestSigFailCount++;
-          // 重试1次后还是错误，则抛出错误
-          if (self.data.requestSigFailCount <= 1) {
-            setTimeout(() => {
-              console.error('获取roomsig失败，重试~');
-              self.requestSigServer(userSig, privMapEncrypt);
-            }, 1000);
+          // 重试3次后还是错误，则抛出错误
+          if (self.data.requestSigFailCount > 3) {
+            self.postErrorEvent(self.data.ERROR_REQUEST_ROOM_SIG, '获取房间SIG错误');
           } else {
-            self.postErrorEvent(self.data.ERROR_REQUEST_ROOM_SIG, '获取roomsig失败');
+            setTimeout(() => {
+              console.error('>>>>>>>>', '获取房间sig失败，重试~');
+              self.requestSigServer(userSig, privMapEncrypt);
+            }, 2000);
           }
         }
       })
     },
 
     onWebRTCUserListPush: function (msg) {
-      console.log('onWebRTCUserListPush method', msg);
+      console.log('================= onWebRTCUserListPush method', msg);
       if (!msg) {
         return;
       }
@@ -594,8 +396,9 @@ Component({
         return;
       }
 
+      console.log("onWebRTCUserListPush.jsonDict:", jsonDic);
       var newUserList = jsonDic.userlist;
-      console.log('play_users: ', JSON.stringify(newUserList));
+      console.log('=== newUserList: ', JSON.stringify(newUserList));
 
       if (!newUserList) {
         return;
@@ -638,22 +441,17 @@ Component({
         }
         if (!hasPlay && emptyIndex != -1) {
           val.loading = false;
-
-          // 如果是bigsmall大小画面，则使用固定的id
-          if (self.data.template == 'bigsmall') {
-            val.playerContext = wx.createLivePlayerContext(self.data.fixPlayId, self);
-          } else {
-            val.playerContext = wx.createLivePlayerContext(val.userID, self);
-          }
-          // val.playerContext = wx.createLivePlayerContext(val.userID);
+          val.playerContext = wx.createLivePlayerContext(val.userID);
           self.data.members[emptyIndex] = val;
         }
+      });
 
-        self.setData({
-          members: self.data.members
-        });
 
-        self.initPlayerStatus(val.userID);
+      var role = this.filterRole();
+      self.setData({
+        members: self.data.members,
+        presenter: role.presenter,
+        audience: role.audience
       });
     },
 
@@ -671,24 +469,15 @@ Component({
           //   var player = wx.createLivePlayerContext(self.data.members[i].userID);
           //   player && player.stop();
           // }
-          var userid = self.data.members[i].userID;
-          if (userid) {
-            if (self.data.playerVideoStatus[userid]) {
-              delete self.data.playerVideoStatus[userid];
-            }
-            if (self.data.playerMutedStatus[userid]) {
-              delete self.data.playerMutedStatus[userid];
-            }
-          }
-          self.setData({
-            playerVideoStatus: self.data.playerVideoStatus,
-            playerMutedStatus: self.data.playerMutedStatus,
-          });
           self.data.members[i] = {};
         }
       }
+
+      var role = this.filterRole();
       self.setData({
-        members: self.data.members
+        members: self.data.members,
+        presenter: role.presenter,
+        audience: role.audience
       });
     },
 
@@ -701,8 +490,11 @@ Component({
           self.data.members[i] = {};
         }
       }
+      var role = this.filterRole();
       self.setData({
-        members: self.data.members
+        members: self.data.members,
+        presenter: role.presenter,
+        audience: role.audience
       });
     },
 
@@ -718,7 +510,7 @@ Component({
       } else {
         code = e;
       }
-      console.log('推流事件：', code);
+      console.log('>>>>>>>>>>>> 推流情况：', code);
       var errmessage = '';
       switch (code) {
         case 1002:
@@ -776,7 +568,14 @@ Component({
             console.log('网络类型发生变化，需要重新进房', code);
             //先退出房间
             self.exitRoom();
+
+            //再重新进入房间
+            // this.setData({
+            //   retryIndex: 5,
+            // })
+
             self.start();
+
             break;
           }
         case 2007:
@@ -798,7 +597,7 @@ Component({
 
     // 标签错误处理
     onError: function (e) {
-      console.error('onError: ', e);
+      console.log('推流错误：', e);
       e.detail.errCode == 10001 ? (e.detail.errMsg = '未获取到摄像头功能权限，请删除小程序后重新打开') : '';
       e.detail.errCode == 10002 ? (e.detail.errMsg = '未获取到录音功能权限，请删除小程序后重新打开') : '';
       self.postErrorEvent(self.data.ERROR_CAMERA_MIC_PERMISSION, e.detail.errMsg || '未获取到摄像头、录音功能权限，请删除小程序后重新打开')
@@ -806,9 +605,9 @@ Component({
 
     //播放器live-player回调
     onPlay: function (e) {
-      console.log('onPlay code: ', e.detail.code);
+      console.log('>>>>>>>>>>>> onPlay code:', e.detail.code);
       self.data.members.forEach(function (val) {
-        if ((self.data.template == 'bigsmall' && e.currentTarget.id === self.data.fixPlayId) || e.currentTarget.id == val.userID) {
+        if (e.currentTarget.id == val.userID) {
           switch (e.detail.code) {
             case 2007:
               {
@@ -820,11 +619,6 @@ Component({
               {
                 console.log('视频播放开始: ', e);
                 val.loading = false;
-                setTimeout(() => {
-                  self.setData({
-                    startPlay: true
-                  });
-                }, 500);
                 break;
               }
             case -2301:
@@ -840,8 +634,43 @@ Component({
           }
         }
       });
+
+      var role = this.filterRole();
+      self.setData({
+        members: self.data.members,
+        presenter: role.presenter,
+        audience: role.audience
+      });
     },
 
+    filterRole() {
+      var presenter = [];
+      var audience = [];
+      for (var i = 0; i < self.data.members.length; i++) {
+        if (self.data.members[i].userID == this.data.creator) {
+          presenter.push(self.data.members[i]);
+        } else {
+          audience.push(self.data.members[i]);
+        }
+      }
+
+      if (this.data.isCaster) { // 如果自己是主播
+
+      } else { // 如果自己不是主播
+        if (self.data.maxMembers === 3 && audience.length > 2) { // 如果是1pusher 3个player
+          audience = audience.slice(0, 2); // 只有2个观众
+        }
+
+        if (!presenter.length) { // 如果主播没有, 要保证有一个主播
+          presenter = [{}];
+        }
+      }
+
+      return {
+        presenter,
+        audience
+      }
+    },
 
     // IM登录监听
     imLoginListener() {
@@ -866,97 +695,78 @@ Component({
           }
         },
 
-        // 系统消息
-        onGroupSystemNotifys: {
-          "1": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 1, notify);
-          }, //申请加群请求（只有管理员会收到）
-          "2": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 2, notify);
-          }, //申请加群被同意（只有申请人能够收到）
-          "3": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 3, notify);
-          }, //申请加群被拒绝（只有申请人能够收到）
-          "4": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 4, notify);
-          }, //被管理员踢出群(只有被踢者接收到)
-          "5": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 5, notify);
-          }, //群被解散(全员接收)
-          "6": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 6, notify);
-          }, //创建群(创建者接收)
-          "7": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 7, notify);
-          }, //邀请加群(被邀请者接收)
-          "8": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 8, notify);
-          }, //主动退群(主动退出者接收)
-          "9": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 9, notify);
-          }, //设置管理员(被设置者接收)
-          "10": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 10, notify);
-          }, //取消管理员(被取消者接收)
-          "11": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 11, notify);
-          }, //群已被回收(全员接收)
-          "255": (notify) => {
-            self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 255, notify);
-          } //用户自定义通知(默认全员接收)
+        // 监听（多终端同步）群系统消息事件，必填
+        onGroupSystemNotifys() {
+          return {
+            "1": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 1, notify);
+            }, //申请加群请求（只有管理员会收到）
+            "2": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 2, notify);
+            }, //申请加群被同意（只有申请人能够收到）
+            "3": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 3, notify);
+            }, //申请加群被拒绝（只有申请人能够收到）
+            "4": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 4, notify);
+            }, //被管理员踢出群(只有被踢者接收到)
+            "5": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 5, notify);
+            }, //群被解散(全员接收)
+            "6": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 6, notify);
+            }, //创建群(创建者接收)
+            "7": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 7, notify);
+            }, //邀请加群(被邀请者接收)
+            "8": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 8, notify);
+            }, //主动退群(主动退出者接收)
+            "9": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 9, notify);
+            }, //设置管理员(被设置者接收)
+            "10": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 10, notify);
+            }, //取消管理员(被取消者接收)
+            "11": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 11, notify);
+            }, //群已被回收(全员接收)
+            "255": (notify) => {
+              self.fireIMErrorEvent(CONSTANT.IM.GROUP_SYSTEM_NOTIFYS, 255, notify);
+            } //用户自定义通知(默认全员接收)
+          }
         },
 
         // 监听群资料变化事件，选填
         onGroupInfoChangeNotify(groupInfo) {
           self.fireIMErrorEvent(CONSTANT.IM.GROUP_INFO_CHANGE_NOTIFY, 0, groupInfo);
-        },
-
-        // 被踢下线
-        onKickedEventCall() {
-          self.fireIMErrorEvent(CONSTANT.IM.KICKED);
         }
       }
     },
 
-    /**
-     * 发送C2C文本消息
-     * @param {string} receiveUser 
-     * @param {string} msg 
-     * @param {function} succ 
-     * @param {function} fail
-     */
-    sendC2CTextMsg(receiveUser, msg, succ, fail) {
-      imHandler.sendC2CTextMsg(receiveUser, msg, succ, fail);
+    // 发送IM文本消息
+    sendMsg(msg, succ, fail) {
+      imHandler.sendMsg(msg, succ, fail);
     },
 
     /**
-     * 发送C2C自定义消息
-     * @param {object} msgObj {data: 'xxx', cmd: 'xxxx'}
-     * @param {function} succ
-     * @param {function} fail
+     * 发送群组消息
+     * @param {*} msg 消息内容
+     * @param {*} succ 成功的回调
+     * @param {*} fail 失败的回调
      */
-    sendC2CCustomMsg(receiveUser, msgObj, succ, fail) {
-      imHandler.sendC2CCustomMsg(receiveUser, msgObj, succ, fail);
+    sendGroupMsg(msg, succ, fail) {
+      imHandler.sendGroupMsg(msg, succ, fail);
     },
 
     /**
-     * 发送群组文本消息
-     * @param {string} msg 
-     * @param {function} succ 
-     * @param {function} fail
+     * 发送C2C消息
+     * @param {*} msg 
+     * @param {*} succ 
+     * @param {*} fail 
      */
-    sendGroupTextMsg(msg, succ, fail) {
-      imHandler.sendGroupTextMsg(msg, succ, fail);
-    },
-
-    /**
-     * 发送群组自定义消息
-     * @param {object} msgObj {data: 'xxx', cmd: 'xxxx'}
-     * @param {function} succ
-     * @param {function} fail
-     */
-    sendGroupCustomMsg(msgObj, succ, fail) {
-      imHandler.sendGroupCustomMsg(msgObj, succ, fail);
+    sendC2CCustomMsg(toUser, msg, succ, fail) {
+      imHandler.sendC2CCustomMsg(toUser, msg, succ, fail);
     },
 
     /**
@@ -975,18 +785,6 @@ Component({
         code: code,
         detail: detail
       });
-    },
-
-    // 初始化状态
-    initPlayerStatus(uid) {
-      var status = this.data.playerVideoStatus[uid];
-      if (typeof status === 'undefined') {
-        this.data.playerVideoStatus[uid] = !!this.data.autoplay;
-        var playerVideoStatus = this.data.playerVideoStatus;
-        this.setData({
-          playerVideoStatus: playerVideoStatus
-        })
-      }
     }
   }
 })

@@ -18,6 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    template: 'bigsmall',
     webrtcroomComponent: null,
     roomID: '', // 房间id
     roomname: '', // 房间名称
@@ -46,7 +47,8 @@ Page({
       height: 0
     },
     isErrorModalShow: false,
-    heartBeatFailCount: 0 //心跳失败次数
+    heartBeatFailCount: 0, //心跳失败次数
+    qmtapi:0
   },
 
   /**
@@ -123,6 +125,7 @@ Page({
         break;
       case CONSTANT.IM.BIG_GROUP_MSG_NOTIFY: // 接收到IM大群消息
         console.log('接收到大群(直播聊天室)消息通知');
+        console.debug('成员进入或退出通知');
         var msgs = data;
         imHandler.handleGroupMessage(msgs, (msg) => {
           if (!msg.content) {
@@ -168,6 +171,13 @@ Page({
                     title: '提示',
                     content: res.msg,
                     showCancel: false,
+                    complete:function(){
+                      if (res.data.role == 'anchor'){
+                        wx.redirectTo({
+                          url: '/pages/error/error'
+                        })
+                      }
+                    }
                   })
                 } else {
                   console.log(res.msg)
@@ -457,6 +467,8 @@ Page({
 
         //后续坐席是否在线左上角图片效果
         self.Countdown(self.data.token, self.data.timestamp);
+        //激活全媒体用户在线通知
+        self.qmtIn(self.data.token, self.data.timestamp)
       },
       function (res) {
         console.error(self.data.ERROR_CREATE_ROOM, '进入房间失败[' + res.errCode + ';' + res.errMsg + ']')
@@ -653,8 +665,9 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    console.log('room.js onUnload');
-    clearTimeout(fadeActionTimer);
+    console.log('room.js onUnload')
+    clearTimeout(fadeActionTimer)
+    this.qmtOut(this.data.token, this.data.timestamp)
     if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
     webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
   },
@@ -857,5 +870,25 @@ Page({
         })
       self.Countdown(token, timestamp);
     }, 30000);
-  }
+  },
+
+  //全媒体-用户进入监控定时器
+  qmtIn: function (token, timestamp){
+    webrtcroom.qmtInAndOutRequest(token, timestamp, 1)
+    this.data.qmtapi = setInterval(function(){
+      webrtcroom.qmtInAndOutRequest(token, timestamp, 1)
+    },30000);
+    webrtcroom.qmtInterval = this.data.qmtapi
+    this.setData({
+      qmtapi: this.data.qmtapi
+    });
+  },
+  //全媒体-用户离开监控定时器
+  qmtOut: function(token, timestamp){
+    clearInterval(this.data.qmtapi)
+    webrtcroom.qmtInAndOutRequest(token, timestamp, 2)
+    this.setData({
+      qmtapi: 0
+    });
+  },
 })

@@ -1,6 +1,10 @@
 const CONSTANT = {
   TEMPLATE_TYPE: {
-    'BIGSMALL': 'bigsmall' // 大小画面
+    '1V1': '1v1',
+    '1V3': '1v3',
+    '1U3D': '1u3d',
+    '1L3R': '1l3r',
+    '1man': '1man'
   },
 
   IM: {
@@ -11,7 +15,6 @@ const CONSTANT = {
     MSG_NOTIFY: 'msg_notify', // 普通群消息
     GROUP_SYSTEM_NOTIFYS: 'group_system_notifys', // 监听（多终端同步）群系统消息事件，必填
     GROUP_INFO_CHANGE_NOTIFY: 'group_info_change_notify', // 监听群资料变化事件，选填
-    KICKED: 'kicked' // 被踢下线
   }
 }
 

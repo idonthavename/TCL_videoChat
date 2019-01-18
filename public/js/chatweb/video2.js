@@ -71,10 +71,12 @@ $(".vid").on('click',function () {
         $(".videoSelectVid").removeClass("fadeIn").fadeOut();
         $(".stopVid").removeClass("fadeIn").fadeOut();
         $(".playVid").removeClass("fadeIn").fadeOut();
+        $(".rotating").removeClass("fadeIn").fadeOut();
     }else{
         $(".videoSelectVid").addClass("fadeIn").fadeIn();
         $(".stopVid").addClass("fadeIn").fadeIn();
         $(".playVid").addClass("fadeIn").fadeIn();
+        $(".rotating").addClass("fadeIn").fadeIn();
     }
 });
 
@@ -139,6 +141,7 @@ function hiddenPage1(){
 $(".stopVid").on("click",pauseVid);
 $(".playVid").on("click",goonVid);
 $(".videoSelectVid").on("click",videoSelectVid);
+$(".rotating").on("click",rotating);
 
 function goonVid(){
     if ($(".playVid").hasClass("muted")){
@@ -168,8 +171,18 @@ function pauseVid(){
 function videoSelectVid(){
     videoSelect++;
     if (videoSelect >= videoDevices.length) videoSelect = 0;
-    console.log(videoDevices[videoSelect]);
-    chooseVideo(videoDevices[videoSelect]);
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    if (userAgent.indexOf("Safari") > -1) {
+        safariChooseVideo(videoSelect);
+    }else{
+        console.log(videoDevices[videoSelect]);
+        chooseVideo(videoDevices[videoSelect]);
+    }
+}
+function rotating(){
+    videoRotate++;
+    $("video").css("transform","rotate("+(videoRotate*90)+"deg)");
+    return false;
 }
 
 function start(){

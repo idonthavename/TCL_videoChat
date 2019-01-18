@@ -1,25 +1,19 @@
-<import src='./gridtemplate/gridtemplate.wxml'/>
-
-<import src='./1u3dtemplate/1u3dtemplate.wxml'/>
-
-<import src='./1l3rtemplate/1l3rtemplate.wxml'/>
-
-<import src='./1mantemplate/1mantemplate.wxml'/>
+<import src='./gridtemplate/gridtemplate.wxml' />
+<import src='./floattemplate/floattemplate.wxml' />
+<import src='./bigsmalltemplate/bigsmalltemplate.wxml' />
+<import src='./1mantemplate/1mantemplate.wxml' />
 
 <view class='conponent-box'>
-    <view styles="width:100%;height=100%;" wx:if="{{template=='1v3' || template=='1v1'}}">
-        <template is='gridtemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, muted, debug, members, creator, isCaster, presenter, audience}}"/>
-    </view>
-
-    <view styles="width:100%;height=100%;" wx:if="{{template=='1u3d'}}">
-        <template is='1u3dtemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, muted, debug, members, creator, isCaster, presenter, audience}}"/>
-    </view>
-
-    <view styles="width:100%;height=100%;" wx:if="{{template=='1l3r'}}">
-        <template is='1l3rtemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, muted, debug, members, creator, isCaster, presenter, audience}}"/>
-    </view>
-
-    <view styles="width:100%;height=100%;" wx:if="{{template=='1man'}}">
-        <template is='1mantemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, muted, debug, members, creator, isCaster, presenter, audience, fadeAction, devicePosition}}"/>
-    </view>
+  <block wx:if="{{template == 'float'}}">
+    <template is='floattemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, whiteness, enableCamera, muted, debug, members, autoplay, playerMutedStatus, playerVideoStatus,roomName, playerBackgroundImg, waitingImg, loadingImg}}" />
+  </block>
+  <block wx:elif="{{template == 'grid'}}">
+    <template is='gridtemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, whiteness, enableCamera, muted, debug, members, autoplay, playerMutedStatus, playerVideoStatus,roomName, playerBackgroundImg, waitingImg, loadingImg}}" />
+  </block>
+  <block wx:elif="{{template == 'bigsmall'}}">
+    <template is='bigsmalltemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, whiteness, enableCamera, muted, debug, members, autoplay, playerMutedStatus, playerVideoStatus,roomName, smallViewLeft, smallViewTop, smallViewWidth, smallViewHeight, startPlay, fixPlayId, playerBackgroundImg, waitingImg, loadingImg}}" />
+  </block>
+  <block wx:elif="{{template == '1man'}}">
+    <template is='1mantemplate' data="{{pushURL, aspect, minBitrate, maxBitrate, beauty, whiteness, enableCamera, muted, debug, members, autoplay, playerMutedStatus, playerVideoStatus,roomName, smallViewLeft, smallViewTop, smallViewWidth, smallViewHeight, startPlay, fixPlayId, playerBackgroundImg, waitingImg, loadingImg, creator, isCaster, presenter, audience, fadeAction, devicePosition}}" />
+  </block>
 </view>

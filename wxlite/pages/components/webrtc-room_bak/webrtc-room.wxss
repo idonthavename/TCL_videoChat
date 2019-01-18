@@ -5,8 +5,7 @@
   height: 100%;
 }
 
-@import "/app.wxss";
-@import "./bigsmalltemplate/bigsmalltemplate.wxss";
 @import "./gridtemplate/gridtemplate.wxss";
-@import "./floattemplate/floattemplate.wxss";
+@import "./1u3dtemplate/1u3dtemplate.wxss";
+@import "./1l3rtemplate/1l3rtemplate.wxss";
 @import "./1mantemplate/1mantemplate.wxss";

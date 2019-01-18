@@ -13,9 +13,10 @@ img{display:block;outline:0}
 .zaodian{top:0;left:0;width:100%;height:100%;background:url(../../images/chatweb/zaodiangif.gif) repeat;opacity:.08}
 .vid.on{visibility:visible;opacity:1}
 .vid{visibility:hidden;overflow:hidden;width:100%;height:100%;opacity:0;transition:all .6s ease-out}
-.playVid,.stopVid,.videoSelectVid{bottom:0px;display:none;margin-left:-55px}
-.playVid.on,.stopVid.on,.videoSelectVid on{display:block}
+.playVid,.stopVid,.videoSelectVid,.rotating{bottom:0px;display:none;margin-left:-55px}
+.playVid.on,.stopVid.on,.videoSelectVid.on,.rotating.on{display:block}
 .videoSelectVid{left: 25%;}
+.rotating{left: 25%;}
 .stopVid{left: 50%;}
 .playVid{left: 75%;}
 .vidImg{top:0;left:0}

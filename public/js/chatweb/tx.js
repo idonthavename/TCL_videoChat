@@ -114,7 +114,6 @@ function onLocalStreamAdd(info) {
     });
 }
 
-
 function onRemoteStreamUpdate( info ) {
     console.debug( info )
     if (info.stream && info.stream.active === true)
@@ -182,7 +181,7 @@ function initRTC(opts){
             privateMapKey: opts.privateMapKey,
             role : "user",
             /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
-            pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
+             pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
         });
         if (opts.anchorIsOnline == 0 && opts.anchorIsOnline != "notAllow"){
             $("#modal3Desc").text("坐席还未进入房间，请稍后");
@@ -279,6 +278,24 @@ function chooseVideo(device){
     RTC.chooseVideoDevice(device);
 }
 
+function safariChooseVideo(videoIndex){
+    //采集音视频流
+    RTC.getLocalStream({
+        video:true,
+        audio:true,
+        videoDevice: {
+            facingMode: {
+                ideal: videoIndex === 0 ? 'user': 'environment'
+            }
+        }
+    },function(info){
+        //更新音视频流
+        RTC.updateStream( {
+            stream: info.stream
+        })
+    });
+}
+
 Bom = {
     /**
      * @description 读取location.search
@@ -358,35 +375,35 @@ function onMsgNotify(msgs) {
         var msgsObj = IM.parseMsgs(msgs)
         msgsObj.textMsgs.forEach((msg) => {
             var content = JSON.parse(msg.content);
-            if (content.cmd === 'sketchpad') {
-                var body = JSON.parse(content.data.msg);
-                if (body.type == 'request' && body.action == 'currentBoard') {
-                    if (this.$refs.sketchpadCom) {
-                        var currentBoard = this.$refs.sketchpadCom.getCurrentBoard();
-                        var boardBg = this.$refs.sketchpadCom.getBoardBg() || {};
-                        IM.sendBoardMsg({
-                            groupId: this.courseId,
-                            msg: JSON.stringify({
-                                action: body.action,
-                                currentBoard: currentBoard
-                                //,boardBg: JSON.stringify(boardBg)
-                            }),
-                            nickName: this.selfName,
-                            identifier: this.userID
-                        });
+        if (content.cmd === 'sketchpad') {
+            var body = JSON.parse(content.data.msg);
+            if (body.type == 'request' && body.action == 'currentBoard') {
+                if (this.$refs.sketchpadCom) {
+                    var currentBoard = this.$refs.sketchpadCom.getCurrentBoard();
+                    var boardBg = this.$refs.sketchpadCom.getBoardBg() || {};
+                    IM.sendBoardMsg({
+                        groupId: this.courseId,
+                        msg: JSON.stringify({
+                            action: body.action,
+                            currentBoard: currentBoard
+                            //,boardBg: JSON.stringify(boardBg)
+                        }),
+                        nickName: this.selfName,
+                        identifier: this.userID
+                    });
 
-                        // 如果有图片则补发图片
-                        var bgUrl = boardBg[currentBoard] && boardBg[currentBoard].url;
-                        if (bgUrl) {
-                            this.sendBoardBgPicMsg(currentBoard, bgUrl);
-                            setTimeout(() => {
-                                this.sendSwitchBoardMsg(currentBoard);
-                        }, 500);
-                        }
+                    // 如果有图片则补发图片
+                    var bgUrl = boardBg[currentBoard] && boardBg[currentBoard].url;
+                    if (bgUrl) {
+                        this.sendBoardBgPicMsg(currentBoard, bgUrl);
+                        setTimeout(() => {
+                            this.sendSwitchBoardMsg(currentBoard);
+                    }, 500);
                     }
                 }
             }
-        })
+        }
+    })
     }
 }
 
