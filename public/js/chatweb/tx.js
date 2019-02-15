@@ -58,6 +58,10 @@ function createVideoElement( id, isLocal, userid){
             if (json.data.role == 'company') {
                 $("#wattingForCompany").hide();
                 $("#"+id).show();
+                var userAgent = navigator.userAgent.toLowerCase(); //取得浏览器的userAgent字符串
+                var isChrome = userAgent.indexOf("chrome") != -1;
+                var isSafari = userAgent.indexOf("safari") != -1;
+                if (isChrome && isSafari) $("#"+id).css("height","auto");
                 clearTimeout(companyInTimer);
             }
             if (isLocal){
@@ -174,7 +178,7 @@ function initRTC(opts){
         "userSig": opts.userSig,
         "sdkAppId": opts.sdkappid,
         "accountType": opts.accountType,
-        "closeLocalMedia": opts.closeLocalMedia
+        //"closeLocalMedia": opts.closeLocalMedia
     },function(){
         RTC.createRoom({
             roomid : opts.roomid,
@@ -182,6 +186,8 @@ function initRTC(opts){
             role : "user",
             /*pstnBizType: parseInt($("#pstnBizType").val() || 0),
              pstnPhoneNumber:  $("#pstnPhoneNumber").val()*/
+        },function (info) {
+            startRTC();
         });
         if (opts.anchorIsOnline == 0 && opts.anchorIsOnline != "notAllow"){
             $("#modal3Desc").text("坐席还未进入房间，请稍后");

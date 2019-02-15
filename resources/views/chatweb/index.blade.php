@@ -127,7 +127,8 @@
 <script type="text/javascript" src="js/remodal/remodal.js"></script>
 {{--<script src="https://sqimg.qq.com/expert_qq/webrtc/latest/WebRTCAPI.min.js"></script>--}}
 {{--<script src="https://sqimg.qq.com/expert_qq/webrtc/2.2/WebRTCAPI.min.js"></script>--}}
-<script src="https://www.qcloudtrtc.com/webrtc-samples/dist/WebRTCAPI.min.js?v={{time()}}" ></script>
+{{--<script src="https://www.qcloudtrtc.com/webrtc-samples/dist/WebRTCAPI.min.js?v={{time()}}" ></script>--}}
+<script src="https://sqimg.qq.com/expert_qq/webrtc/3.0.1/WebRTCAPI.min.js"></script>
 <script src="https://sqimg.qq.com/expert_qq/webim/1.7.1/webim.min.js"></script>
 <script type="text/javascript" src="js/chatweb/im.js"></script>
 <script type="text/javascript" src="js/chatweb/webim.js"></script>

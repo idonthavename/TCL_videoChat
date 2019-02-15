@@ -171,10 +171,16 @@ function pauseVid(){
 function videoSelectVid(){
     videoSelect++;
     if (videoSelect >= videoDevices.length) videoSelect = 0;
-    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-    if (userAgent.indexOf("Safari") > -1) {
+    var userAgent = navigator.userAgent.toLowerCase(); //取得浏览器的userAgent字符串
+    var isChrome = userAgent.indexOf("chrome") != -1;
+    var isSafari = userAgent.indexOf("safari") != -1;
+    if (!isChrome && isSafari) {
+        console.log("ios change camera");
+        console.log(videoSelect);
         safariChooseVideo(videoSelect);
     }else{
+        console.log("android change camera");
+        console.log(videoDevices);
         console.log(videoDevices[videoSelect]);
         chooseVideo(videoDevices[videoSelect]);
     }
