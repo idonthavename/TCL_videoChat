@@ -141,5 +141,16 @@
         var vConsole = new VConsole();
     </script>
 @endif
+@if($role == 'anchor')
+    <script>
+        notifyQMT(1);
+        QMTtimer = window.setInterval("notifyQMT(1)",60000);
+    </script>
+@elseif($role == 'company')
+    <script>
+        notifyCompanyQMT(1);
+        QMTtimer = window.setInterval("notifyCompanyQMT(1)", 60000);
+    </script>
+@endif
 </body>
 </html>

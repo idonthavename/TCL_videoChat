@@ -3,6 +3,7 @@
         "pages/main/main",
         "pages/videochat/videochat",
         "pages/error/error"
+        
     ],
     "networkTimeout": {
         "request": 60000

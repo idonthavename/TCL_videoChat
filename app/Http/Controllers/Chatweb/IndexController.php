@@ -133,6 +133,7 @@ class IndexController extends Controller
             $ret['status'] = 200;
             $ret['msg'] = $roleAllow[$role].'已离开房间';
             $ret['data'] = ['role'=>$role];
+            Log::info('checkQuitUserForRole：'.$userid.' = '.$roleAllow[$role].'已离开房间');
             return response()->json($ret);
         }else{
             return response()->json($ret);
@@ -243,7 +244,7 @@ class IndexController extends Controller
     public function confForCompany(Request $request){
         if ($request->role == 'company') {
             //配置项
-            $this->tx_config = ['userid' => md5($request->session()->getId() . env('VIDEOCHAT_USER_SALT'))];
+            $this->tx_config = ['userid' => md5($request->session()->getId().env('VIDEOCHAT_USER_SALT'))];
 
             $anchorIsOnline = false;
             $anchorIsOnline = $this->redis->hexists('TCL_WEBRTCROOM_' . $request->roomid, 'anchor');

@@ -61,18 +61,19 @@ function createVideoElement( id, isLocal, userid){
                 var userAgent = navigator.userAgent.toLowerCase(); //取得浏览器的userAgent字符串
                 var isChrome = userAgent.indexOf("chrome") != -1;
                 var isSafari = userAgent.indexOf("safari") != -1;
-                if (isChrome && isSafari) $("#"+id).css("height","auto");
+                var isAndroid = u.indexOf('android') > -1 || u.indexOf('adr') > -1;
+                if ((userAgent.match(/MicroMessenger/i) == "micromessenger") && isAndroid) $("#"+id).css("height","auto");
                 clearTimeout(companyInTimer);
             }
             if (isLocal){
                 H5role = json.data.role;
-                if (H5role == 'company'){
+                /*if (H5role == 'company'){
                     notifyCompanyQMT(1);
                     QMTtimer = window.setInterval("notifyCompanyQMT(1)", 60000);
                 }else{
                     notifyQMT(1);
                     QMTtimer = window.setInterval("notifyQMT(1)",60000);
-                }
+                }*/
             }
         }else {
             console.error(json.msg);

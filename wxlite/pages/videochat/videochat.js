@@ -656,9 +656,13 @@ Page({
    */
   onHide: function () {
     console.log('room.js onHide');
-    clearTimeout(fadeActionTimer);
+    clearTimeout(fadeActionTimer)
+    this.qmtOut(this.data.token, this.data.timestamp)
     if (this.data.webrtcroomComponent != null) this.data.webrtcroomComponent.stop();
     webrtcroom.quitRoom(this.data.userID, this.data.roomID, this.data.original, this.data.token, this.data.timestamp);
+    wx.redirectTo({
+      url: '/pages/main/main'
+    })
   },
 
   /**
